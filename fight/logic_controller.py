@@ -40,6 +40,9 @@ class Controller():
         self.saske_style.set_sprite_group(self.sprite_group)
         self.saske_style.set_key_controller(self.key_controller)
     
+    def saske_be_hit_far_away(self):
+        self.saske_style.change_to_status('倒在地上')
+    
     def naruto_attack_saske(self):
         print('naruto attack')
         #在下面添加判断的逻辑，是在跑还是在干什么，根据逻辑确定两者之间的位置以及是否要切换
@@ -47,12 +50,18 @@ class Controller():
             #这里要跳过3秒的帧数   resource_load里面有一个fixed_flush函数  我们要想办法把它抽成一个共有的类
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             if self.sleep(3000):
-                self.naruto_style.change_status('run')
-                self.saske_style.change_status('run')
+                self.naruto_style.change_to_status('run')
+                self.saske_style.change_to_status('run')
+                
         elif self.naruto_style.status == 'run' and self.saske_style.status == 'run':
             #首先跑一下看看是不是idle3秒之后开始相对跑近     然后下面需要判断一下是不是距离足够进了
-            
-            return
+            print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
+            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 20:
+                self.naruto_style.change_to_status('挥拳')
+                self.naruto_style.append_end_update_fanjiaoti(self.saske_be_hit_far_away)
+                #寻找佐助后仰的动作  先把佐助鸣人流程打通再调帧率
+                self.saske_style.change_to_status('后仰')
+        #后仰的时候，先顺着波，然后倒着播，中途被打了再顺着播，然后倒着播，播完了就变成idle了
     
     def saske_attack_naruto(self):
         print('saske attack')

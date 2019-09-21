@@ -159,9 +159,12 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.hidden = True
         self.hide_timer = GameCommonData.tick#pygame.time.get_ticks()
         self.image_index = 0
-        self.update_function = None
         self.flush_interval = 17
         self.flush_time = int(round(time.time() * 1000))
+        
+        self.start_update_function = []
+        self.update_function = []
+        self.end_update_function = []
 
     def set_images(self, images_url, need_flip = False):
         self.images = image_load(images_url)
@@ -179,8 +182,20 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.rect.centerx = GameCommonData.WIDTH / 2
         self.rect.bottom = GameCommonData.HEIGHT - 10
  
-    def set_fuction(self,func):
-        self.update_function = func
+    #如果这个列表中要移除元素，需要改存储方式，把存储方式改为map，然后自己造一个id生成器，id->func，移除根据id来
+    def append_start_update_function(self, func):
+        self.start_update_function.append(func)
+        return len(self.start_update_function) - 1
+ 
+    def append_update_function(self, func):
+        self.update_function.append(func)
+        return len(self.update_function) - 1
+    
+    def append_end_update_function(self, func):
+        self.end_update_function.append(func)
+        return len(self.end_update_function) - 1
+
+
 
     def set_left_padding(self, left_padding):
         self.rect.centerx = left_padding
@@ -196,6 +211,9 @@ class CharacterSprite(pygame.sprite.Sprite):
     
     def set_frame_rate(self, frame_rate):
         self.flush_interval = int(round(1000/frame_rate))
+    
+    def get_image_num(self):
+        return len(self.images)
     
     def fixed_flush(self):
         current_time = int(round(time.time() * 1000))
@@ -213,9 +231,15 @@ class CharacterSprite(pygame.sprite.Sprite):
             return
         if not self.fixed_flush():
             return
+        if self.image_index == 0 :
+            for func in self.start_update_function:
+                func()
+            
         self.image = self.images[self.image_index]
         self.image_index = self.image_index + 1
         if self.image_index == len(self.images) and not self.hidden:
             self.image_index = 0
-        if self.update_function:
-            self.update_function()
+            for func in self.end_update_function:
+                func()
+        for func in self.update_function:
+                func(image_index = self.image_index)
