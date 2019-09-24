@@ -46,8 +46,11 @@ class NarutoStyle(Style):
         self.current_sprite.set_top_padding(200)
         
         self.character["naruto/挥拳"].append_end_update_function(self.naruto_status_to_touda)
+        self.character["naruto/挥拳"].set_frame_rate(8)
         self.character["naruto/用头打"].append_end_update_function(self.naruto_status_to_fanjiaoti)
+        self.character["naruto/用头打"].set_frame_rate(8)
         self.character["naruto/反脚踢"].append_end_update_function(self.naruto_status_to_idle)
+        
             #character_sprite = self.add_sprite(naruto_image_url_2[i])
             #top_begin = top_begin + 130
             #if top_begin > GameCommonData.HEIGHT:
@@ -101,7 +104,11 @@ class NarutoStyle(Style):
     def append_end_update_huiquan(self, func):
         if func:
             self.character["naruto/挥拳"].append_end_update_function(func)
-            
+    
+    def append_end_update_yongtouda(self, func):
+        if func:
+            self.character["naruto/用头打"].append_end_update_function(func)
+    
     def append_end_update_fanjiaoti(self, func):
         if func:
             self.character["naruto/反脚踢"].append_end_update_function(func)

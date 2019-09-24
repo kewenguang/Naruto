@@ -165,6 +165,9 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.start_update_function = []
         self.update_function = []
         self.end_update_function = []
+        
+        self.iter = 1
+        self.bounce = False
 
     def set_images(self, images_url, need_flip = False):
         self.images = image_load(images_url)
@@ -226,6 +229,12 @@ class CharacterSprite(pygame.sprite.Sprite):
         else:
             return False
     
+    def set_image_update_bounce(self, bounce):
+        self.bounce = bounce
+    
+    def set_iter(self, ints):
+        self.iter = ints
+    
     def update(self):
         if self.hidden:
             return
@@ -234,12 +243,22 @@ class CharacterSprite(pygame.sprite.Sprite):
         if self.image_index == 0 :
             for func in self.start_update_function:
                 func()
-            
+        
         self.image = self.images[self.image_index]
-        self.image_index = self.image_index + 1
+        
+        self.image_index = self.image_index + self.iter
         if self.image_index == len(self.images) and not self.hidden:
-            self.image_index = 0
+            if self.bounce:
+                self.iter = -1
+                self.image_index = len(self.images) - 1
+            else: 
+                self.image_index = 0
+                for func in self.end_update_function:
+                    func()
+        if self.image_index == 0 and not self.hidden and self.bounce:
+            self.iter = 1
             for func in self.end_update_function:
-                func()
+                    func()
+        
         for func in self.update_function:
                 func(image_index = self.image_index)

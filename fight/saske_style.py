@@ -8,7 +8,7 @@ from fight.resource_load import Style
 
 class SaskeStyle(Style):
     def hou_yang_end_update_handle(self):
-        self.character["saske/后仰"].image_index = len(self.character["saske/后仰"].images) - 1
+        self.change_to_status('idle')
     
     def saske_status_to_qilai(self):
         self.change_to_status('站起来')
@@ -28,7 +28,12 @@ class SaskeStyle(Style):
         self.character["saske/run"].append_update_function(self.update_run) 
         self.character["saske/倒在地上"].append_update_function(self.update_fall_down) 
         self.character["saske/倒在地上"].append_end_update_function(self.saske_status_to_qilai) 
+        self.character["saske/倒在地上"].set_frame_rate(8)
+        
         self.character["saske/站起来"].append_end_update_function(self.saske_status_to_idle)
+        self.character["saske/站起来"].set_frame_rate(8)
+        
+        self.character["saske/后仰"].set_image_update_bounce(False)
         
         self.current_sprite = self.character["saske/idle"]
         self.status = 'idle'
@@ -37,6 +42,7 @@ class SaskeStyle(Style):
         self.current_sprite.set_top_padding(200)
         
         self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
+        self.character["saske/后仰"].set_frame_rate(8)
         
         self.fall_down_interval = 0
     
@@ -84,7 +90,7 @@ class SaskeStyle(Style):
         images_num = self.character["saske/倒在地上"].get_image_num()
         current_left_padding = self.character["saske/倒在地上"].get_left_padding()
         current_top_padding = self.character["saske/倒在地上"].get_top_padding()
-        being_left_padding = current_left_padding + 7
-        being_top_padding = current_top_padding + (image_index*2 - images_num)*10
+        being_left_padding = current_left_padding + 21
+        being_top_padding = current_top_padding + (image_index*2 - images_num)*4
         self.character["saske/倒在地上"].set_left_padding(being_left_padding)  
         self.character["saske/倒在地上"].set_top_padding(being_top_padding)  
