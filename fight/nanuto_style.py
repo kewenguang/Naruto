@@ -8,6 +8,12 @@ from fight.resource_load import Style
 
 class NarutoStyle(Style):
     
+    def hou_yang_end_update_handle(self):
+        self.change_to_status('idle')
+        
+    def naruto_status_to_qilai(self):
+        self.change_to_status('翻身起来')
+        
     def naruto_status_to_touda(self):
         self.change_to_status('用头打')
         
@@ -51,6 +57,10 @@ class NarutoStyle(Style):
         self.character["naruto/用头打"].set_frame_rate(8)
         self.character["naruto/反脚踢"].append_end_update_function(self.naruto_status_to_idle)
         
+        self.character["naruto/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
+        
+        self.character["naruto/death"].append_update_function(self.update_fall_down) 
+        self.character["naruto/death"].append_end_update_function(self.naruto_status_to_qilai) 
             #character_sprite = self.add_sprite(naruto_image_url_2[i])
             #top_begin = top_begin + 130
             #if top_begin > GameCommonData.HEIGHT:
@@ -76,6 +86,12 @@ class NarutoStyle(Style):
         elif status == '用头打':
             Style.change_to_status(self, 'naruto/用头打')
             self.status = '用头打'
+        elif status == '后仰':
+            Style.change_to_status(self, 'naruto/后仰')
+            self.status = '后仰'
+        elif status == 'death':
+            Style.change_to_status(self, 'naruto/death')
+            self.status = 'death'
             
     def update(self):
         if self.key_controller.key_d:
@@ -113,4 +129,11 @@ class NarutoStyle(Style):
         if func:
             self.character["naruto/反脚踢"].append_end_update_function(func)
             
-    
+    def update_fall_down(self, image_index):
+        images_num = self.character["naruto/death"].get_image_num()
+        current_left_padding = self.character["naruto/death"].get_left_padding()
+        current_top_padding = self.character["naruto/death"].get_top_padding()
+        being_left_padding = current_left_padding + 35
+        being_top_padding = current_top_padding + (image_index*2 - images_num)*4
+        self.character["naruto/death"].set_left_padding(being_left_padding)  
+        self.character["naruto/death"].set_top_padding(being_top_padding)  

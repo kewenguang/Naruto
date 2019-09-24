@@ -15,6 +15,15 @@ class SaskeStyle(Style):
     
     def saske_status_to_idle(self):
         self.change_to_status('idle')
+    
+    def saske_status_to_huiquan(self):
+        self.change_to_status('挥拳')
+        
+    def saske_status_to_huiliangdao(self):
+        self.change_to_status('挥两刀')
+    
+    def saske_status_to_up_ti(self):
+        self.change_to_status('向上一脚')
         
     def __init__(self):
         self.character = {}
@@ -32,6 +41,11 @@ class SaskeStyle(Style):
         
         self.character["saske/站起来"].append_end_update_function(self.saske_status_to_idle)
         self.character["saske/站起来"].set_frame_rate(8)
+        
+        self.character["saske/挥刀"].append_end_update_function(self.saske_status_to_huiquan)
+        self.character["saske/挥拳"].append_end_update_function(self.saske_status_to_huiliangdao)
+        self.character["saske/挥两刀"].append_end_update_function(self.saske_status_to_up_ti)
+        self.character["saske/向上一脚"].append_end_update_function(self.saske_status_to_idle)
         
         self.character["saske/后仰"].set_image_update_bounce(False)
         
@@ -90,7 +104,23 @@ class SaskeStyle(Style):
         images_num = self.character["saske/倒在地上"].get_image_num()
         current_left_padding = self.character["saske/倒在地上"].get_left_padding()
         current_top_padding = self.character["saske/倒在地上"].get_top_padding()
-        being_left_padding = current_left_padding + 21
+        being_left_padding = current_left_padding + 35
         being_top_padding = current_top_padding + (image_index*2 - images_num)*4
         self.character["saske/倒在地上"].set_left_padding(being_left_padding)  
         self.character["saske/倒在地上"].set_top_padding(being_top_padding)  
+        
+    def append_end_update_huidao(self, func):
+        if func:
+            self.character["saske/挥刀"].append_end_update_function(func)
+            
+    def append_end_update_huiquan(self, func):
+        if func:
+            self.character["saske/挥拳"].append_end_update_function(func)
+            
+    def append_end_update_huiliangdao(self, func):
+        if func:
+            self.character["saske/挥两刀"].append_end_update_function(func)
+                
+    def append_end_update_up_ti(self, func):
+        if func:
+            self.character["saske/向上一脚"].append_end_update_function(func)
