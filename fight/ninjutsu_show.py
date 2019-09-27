@@ -55,7 +55,7 @@ while running:
     #background_rect = multi_shadow_separation_images[0].get_rect()
     #screen.blit(multi_shadow_separation_images[0], background_rect)
     
-    logic_controller.update()
+    logic_controller.update_function()
     
     all_sprites.update()
     all_sprites.draw(screen)

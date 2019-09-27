@@ -30,7 +30,8 @@ class SaskeStyle(Style):
         saske_image_url = ['saske/倒在地上', 'saske/挥刀',
                             'saske/挥两刀', 'saske/挥拳',
                             'saske/向上一脚', 'saske/idle',
-                            'saske/run','saske/后仰', 'saske/站起来']
+                            'saske/run','saske/后仰', 'saske/站起来',
+                            'saske/开篇挥手']
         for i in range(len(saske_image_url)):
             print('saske_image_url[i]:' + saske_image_url[i])
             self.add_sprite(saske_image_url[i], need_flip = True)
@@ -43,9 +44,13 @@ class SaskeStyle(Style):
         self.character["saske/站起来"].set_frame_rate(8)
         
         self.character["saske/挥刀"].append_end_update_function(self.saske_status_to_huiquan)
+        self.character["saske/挥刀"].set_frame_rate(8)
         self.character["saske/挥拳"].append_end_update_function(self.saske_status_to_huiliangdao)
+        self.character["saske/挥拳"].set_frame_rate(8)
         self.character["saske/挥两刀"].append_end_update_function(self.saske_status_to_up_ti)
+        self.character["saske/挥两刀"].set_frame_rate(8)
         self.character["saske/向上一脚"].append_end_update_function(self.saske_status_to_idle)
+        self.character["saske/向上一脚"].set_frame_rate(8)
         
         self.character["saske/后仰"].set_image_update_bounce(False)
         
@@ -57,6 +62,8 @@ class SaskeStyle(Style):
         
         self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
         self.character["saske/后仰"].set_frame_rate(8)
+        
+        self.character["saske/开篇挥手"].set_frame_rate(8)
         
         self.fall_down_interval = 0
     
@@ -88,7 +95,11 @@ class SaskeStyle(Style):
         elif cmd == '站起来':
             Style.change_to_status(self, 'saske/站起来')
             self.status = '站起来'
-        
+        elif cmd == '开篇挥手':
+            Style.change_to_status(self, 'saske/开篇挥手')
+            self.current_sprite.set_left_padding(GameCommonData.WIDTH - 60)
+            self.status = '开篇挥手'
+            
     def update(self):
         #可以在这里填充关于键盘的响应
         return
@@ -112,6 +123,10 @@ class SaskeStyle(Style):
     def append_end_update_huidao(self, func):
         if func:
             self.character["saske/挥刀"].append_end_update_function(func)
+           
+    def append_update_huidao(self, func):
+        if func:
+            self.character["saske/挥刀"].append_update_function(func)
             
     def append_end_update_huiquan(self, func):
         if func:
@@ -121,6 +136,17 @@ class SaskeStyle(Style):
         if func:
             self.character["saske/挥两刀"].append_end_update_function(func)
                 
+    def append_update_huiliangdao(self, func):
+        if func:
+            self.character["saske/挥两刀"].append_update_function(func)
+                
     def append_end_update_up_ti(self, func):
         if func:
             self.character["saske/向上一脚"].append_end_update_function(func)
+            
+    def append_end_update_kai_pian_hui_shou(self, func):
+        if func:
+            self.character["saske/开篇挥手"].append_end_update_function(func)
+            
+    def  redress_left_padding(self):
+        self.current_sprite.set_left_padding(self.current_sprite.get_left_padding() + 10)

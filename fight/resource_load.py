@@ -172,6 +172,7 @@ class CharacterSprite(pygame.sprite.Sprite):
     def set_images(self, images_url, need_flip = False):
         self.images = image_load(images_url)
         
+        self.need_flip = need_flip
         if need_flip :#如果玩家站在右边，他的图片要翻转
             for i in range(len(self.images)):
                 self.images[i] = pygame.transform.flip(self.images[i],True,False)

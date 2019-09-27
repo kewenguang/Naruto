@@ -16,6 +16,7 @@ class Controller():
         self.current_attacked_player = 'saske'
         #self.t = time.time()
         self.flush_time = 0 #int(round(self.t * 1000))
+        self.update_function = self.start
         
     def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
@@ -55,12 +56,21 @@ class Controller():
         
     def naruto_be_houyang(self):
         self.naruto_style.change_to_status('后仰')
+            
+    def naruto_be_houyang_with_image_index(self, image_index):
+        if self.saske_style.status == '挥刀' and image_index == 4:
+            self.naruto_style.change_to_status('后仰')
+        elif self.saske_style.status == '挥两刀' and image_index == 3:
+            self.naruto_style.change_to_status('后仰')
+        elif self.saske_style.status == '挥两刀' and image_index == 6:
+            self.naruto_style.change_to_status('后仰')
     
     def idle_begin_run(self):
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
             #这里要跳过3秒的帧数   resource_load里面有一个fixed_flush函数  我们要想办法把它抽成一个共有的类
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
+            
             if self.sleep(3000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
@@ -72,8 +82,8 @@ class Controller():
         #在下面添加判断的逻辑，是在跑还是在干什么，根据逻辑确定两者之间的位置以及是否要切换
         if not self.idle_begin_run() and self.naruto_style.status == 'run' and self.saske_style.status == 'run':
             #首先跑一下看看是不是idle3秒之后开始相对跑近     然后下面需要判断一下是不是距离足够进了
-            print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
-            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 85:
+            #print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
+            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 84:
                 self.naruto_style.change_to_status('挥拳')
                 self.naruto_style.append_end_update_huiquan(self.saske_be_houyang)
                 self.naruto_style.append_end_update_yongtouda(self.saske_be_houyang)
@@ -83,14 +93,38 @@ class Controller():
     
     def saske_attack_naruto(self):
         if not self.idle_begin_run() and self.naruto_style.status == 'run' and self.saske_style.status == 'run':
-            print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
-            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 85:
+            #print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
+            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 52:
+                self.naruto_style.change_to_status('idle')
                 self.saske_style.change_to_status('挥刀')
-                self.saske_style.append_end_update_huidao(self.naroto_be_houyang)
-                self.saske_style.append_end_update_huiquan(self.naroto_be_houyang)
-                self.saske_style.append_end_update_huiliangdao(self.naroto_be_houyang)
+                self.saske_style.append_update_huidao(self.naruto_be_houyang_with_image_index)
+                self.saske_style.append_end_update_huiquan(self.naruto_be_houyang)
+                self.saske_style.append_update_huiliangdao(self.naruto_be_houyang_with_image_index)
                 self.saske_style.append_end_update_up_ti(self.naruto_be_hit_far_away)
+        #问题 佐助悯人之间位置太靠近了  另外鸣人被打之后一直飞上飞下
+    
+    def start_to_update(self):
+        if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
+            self.update_function = self.update
+    
+    def naruto_end_update_seyouzhishu(self):
+        self.naruto_style.change_to_status("idle")
+        self.start_to_update()
+    
+    def saske_end_update_kai_pian_hui_shou(self):
+        self.saske_style.change_to_status("idle")
+        self.start_to_update()
+        #self.saske_style. redress_left_padding()
         
+    def start(self):
+        if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
+            if self.sleep(1000):
+                self.naruto_style.change_to_status('色诱之术')
+                self.saske_style.change_to_status('开篇挥手')
+                self.naruto_style.append_end_update_seyouzhishu(self.naruto_end_update_seyouzhishu)
+                self.saske_style.append_end_update_kai_pian_hui_shou(self.saske_end_update_kai_pian_hui_shou)
+    
+    #看看有没有用python来裁剪图片的
     
     def update(self):
         if self.current_attack_player == 'naruto' and self.current_attacked_player == 'saske':
