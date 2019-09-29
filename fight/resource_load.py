@@ -37,7 +37,7 @@ class Style():
         return self.current_sprite.get_top_padding()
     
     #外面需要设置的
-    def set_sprite_group(self, sprite_group):
+    def add_to_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
         self.sprite_group.add(self.current_sprite)
         
@@ -93,6 +93,8 @@ class KeyController():
         self.key_j = False
         self.key_k = False
         self.key_l = False
+        self.key_m = False
+        
     def key_response(self, key_down):
         if key_down == pygame.K_w:
             self.key_w = True
@@ -114,6 +116,9 @@ class KeyController():
             self.key_k = True
         if key_down == pygame.K_l:
             self.key_l = True
+        if key_down == pygame.K_m:
+            self.key_m = True
+            
     def key_revert(self):
         self.key_w = False
         self.key_a = False
@@ -125,6 +130,7 @@ class KeyController():
         self.key_j = False
         self.key_k = False
         self.key_l = False
+        self.key_m = False
         
 key_controller = KeyController()
 key_controller.init()
@@ -169,6 +175,7 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.iter = 1
         self.bounce = False
 
+        
     def set_images(self, images_url, need_flip = False):
         self.images = image_load(images_url)
         
@@ -199,7 +206,8 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.end_update_function.append(func)
         return len(self.end_update_function) - 1
 
-
+    def clear_end_update_function(self):
+        self.end_update_function.clear()
 
     def set_left_padding(self, left_padding):
         self.rect.centerx = left_padding

@@ -34,12 +34,14 @@ class NarutoStyle(Style):
                             "naruto/反脚踢", "naruto/防御", "naruto/风遁螺旋丸形成", "naruto/后仰", "naruto/挥苦无",
                             "naruto/挥拳", "naruto/举螺旋丸", "naruto/空中一脚", "naruto/螺旋丸", "naruto/螺旋丸击中",
                             "naruto/扔手里剑", "naruto/色诱之术", "naruto/下按螺旋丸", "naruto/向上一脚",
-                            "naruto/用头打", "naruto/云朵", "naruto/风遁螺旋丸", "naruto/风遁螺旋丸爆炸"]
+                            "naruto/用头打", "naruto/云朵", "naruto/风遁螺旋丸", "naruto/风遁螺旋丸爆炸", "naruto/一个分身"]
 
         #不应该这样笼统地加，而应该一个一个图集地添加  这样好确定应该放在什么位置 以及update里的内容是什么
         #并且所有图集都应该放在一个HashMap里面，这样比如按下了d键就知道显示哪个图集代表鸣人在往前走
         #left_begin = 60
         #top_begin = 200
+        
+        
         
         #考虑到加载图集会访问硬盘，所以一次性把需要的图集都加载进来
         for i in range(len(naruto_image_url)):
@@ -68,6 +70,7 @@ class NarutoStyle(Style):
         
         self.character["naruto/色诱之术"].set_frame_rate(7)
         
+        self.character["naruto/一个分身"].set_frame_rate(6)
         #用来保存最初始的left_padding
         self.left_padding = self.get_left_padding()
             #character_sprite = self.add_sprite(naruto_image_url_2[i])
@@ -78,7 +81,14 @@ class NarutoStyle(Style):
                 
     #这个update处理键盘响应，然后移动图集，不处理图片更新，图片更新由sprite_group负责
     
+    def set_left_padding(self, left_padding):
+        self.current_sprite.set_left_padding(left_padding)
     
+    def change_to_status_for_fenshen(self, status):
+        if status == 'idle':
+            Style.change_to_status(self, 'naruto/idle')
+            self.status = 'idle'
+            
     def change_to_status(self, status):
         if status == 'run':
             Style.change_to_status(self, 'naruto/run')
@@ -109,6 +119,9 @@ class NarutoStyle(Style):
             Style.change_to_status(self, 'naruto/色诱之术')
             self.status = '色诱之术'
             self.character["naruto/色诱之术"].set_left_padding(85)
+        elif status == '一个分身':
+            Style.change_to_status(self, 'naruto/一个分身')
+            self.status = '一个分身'
             
     def update(self):
         if self.key_controller.key_d:
@@ -145,6 +158,13 @@ class NarutoStyle(Style):
     def append_end_update_fanjiaoti(self, func):
         if func:
             self.character["naruto/反脚踢"].append_end_update_function(func)
+           
+    def append_end_update_yigefenshen(self, func):
+        if func:
+            self.character["naruto/一个分身"].append_end_update_function(func)
+            
+    def clear_end_update_yigefenshen(self):
+        self.character["naruto/一个分身"].clear_end_update_function()
             
     def update_fall_down(self, image_index):
         images_num = self.character["naruto/death"].get_image_num()

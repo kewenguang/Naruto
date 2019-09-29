@@ -17,9 +17,42 @@ class Controller():
         #self.t = time.time()
         self.flush_time = 0 #int(round(self.t * 1000))
         self.update_function = self.start
+        self.insert_action_num = 0
         
     def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
+        
+    def remove_naruto_from_sprite_group(self):
+        for i in range(len(self.list_naruto)):
+            self.sprite_group.remove_internal(self.list_naruto[i])
+        
+    def end_update_fenshen(self):
+        print("6个放完了，接下来是多重影分身")
+        
+    def lianxufenshen(self):
+        if len(self.list_naruto) > 0:
+            self.list_naruto[len(self.list_naruto) - 1].clear_end_update_yigefenshen()
+            self.list_naruto[len(self.list_naruto) - 1].change_to_status_for_fenshen('idle')
+        if len(self.list_naruto) > 5:
+            self.end_update_fenshen()
+            return
+        naruto = NarutoStyle()
+        naruto.add_to_sprite_group(self.sprite_group)
+        naruto.set_key_controller(self.key_controller)
+        naruto.change_to_status('一个分身')
+        naruto.set_left_padding((len(self.list_naruto) + 2) * 130)
+        self.list_naruto.append(naruto)
+        self.insert_action_num = self.insert_action_num + 1
+        naruto.append_end_update_yigefenshen(self.lianxufenshen)
+        #那个分身的延误消散不好看，没有最后的渐进
+            
+    def handle_key_event(self):
+        if self.key_controller.key_m:
+            self.list_naruto = []
+            self.lianxufenshen()
+        elif self.key_controller.key_s:
+            self.change_to_status('naruto/idle')
+        
         
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
@@ -36,9 +69,9 @@ class Controller():
                 return True
         
     def ready(self):
-        self.naruto_style.set_sprite_group(self.sprite_group)
+        self.naruto_style.add_to_sprite_group(self.sprite_group)
         self.naruto_style.set_key_controller(self.key_controller)
-        self.saske_style.set_sprite_group(self.sprite_group)
+        self.saske_style.add_to_sprite_group(self.sprite_group)
         self.saske_style.set_key_controller(self.key_controller)
     
     def saske_be_hit_far_away(self):
@@ -70,8 +103,9 @@ class Controller():
             #这里要跳过3秒的帧数   resource_load里面有一个fixed_flush函数  我们要想办法把它抽成一个共有的类
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
+            self.handle_key_event()
             
-            if self.sleep(3000):
+            if self.insert_action_num == 0 and self.sleep(3000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
                 self.saske_style.change_to_status('run')
