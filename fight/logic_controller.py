@@ -30,26 +30,36 @@ class Controller():
         print("6个放完了，接下来是多重影分身")
         
     def lianxufenshen(self):
-        if len(self.list_naruto) > 0:
-            self.list_naruto[len(self.list_naruto) - 1].clear_end_update_yigefenshen()
-            self.list_naruto[len(self.list_naruto) - 1].change_to_status_for_fenshen('idle')
-        if len(self.list_naruto) > 5:
+        if self.insert_action_num > 5:
+            self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
+            self.list_naruto[self.insert_action_num - 1].change_to_status_for_fenshen('idle')
             self.end_update_fenshen()
             return
-        naruto = NarutoStyle()
-        naruto.add_to_sprite_group(self.sprite_group)
-        naruto.set_key_controller(self.key_controller)
-        naruto.change_to_status('一个分身')
-        naruto.set_left_padding((len(self.list_naruto) + 2) * 130)
-        self.list_naruto.append(naruto)
+        if self.insert_action_num != 0:
+            self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
+            self.list_naruto[self.insert_action_num - 1].change_to_status_for_fenshen('idle')
+        self.list_naruto[self.insert_action_num].set_current_sprite_show()
+        self.list_naruto[self.insert_action_num].append_end_update_yigefenshen(self.lianxufenshen)
         self.insert_action_num = self.insert_action_num + 1
-        naruto.append_end_update_yigefenshen(self.lianxufenshen)
-        #那个分身的延误消散不好看，没有最后的渐进
+        
+            
+    def add_fenshen_to_group(self):
+        for i in range(6):
+            naruto = NarutoStyle()
+            naruto.add_to_sprite_group(self.sprite_group)
+            naruto.set_key_controller(self.key_controller)
+            naruto.change_to_status('一个分身')
+            naruto.set_left_padding((len(self.list_naruto) + 2) * 130)
+            self.list_naruto.append(naruto)
+            naruto.set_current_sprite_hide()
+        self.lianxufenshen()
+        #单个分身的65-71是和做分身之术，所以重新捣鼓图片生成一下 以65为基准的分身之术
+        #优化，注释掉那些不需要加载的图片，init方法应该可以自选加载哪些图片，可以加函数
             
     def handle_key_event(self):
         if self.key_controller.key_m:
             self.list_naruto = []
-            self.lianxufenshen()
+            self.add_fenshen_to_group()
         elif self.key_controller.key_s:
             self.change_to_status('naruto/idle')
         

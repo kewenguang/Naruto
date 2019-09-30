@@ -21,8 +21,8 @@ def change_pic_width():
         cropped = img.crop((0, 0, 60, 66)) 
         cropped.save(output_dir + "/" + filename)
 
-change_pic_width()
-sys.exit()
+#change_pic_width()
+#sys.exit()
         
 def change_pic_height():
     for filename in os.listdir(input_dir):
@@ -48,13 +48,17 @@ def change_pic_color():
             data = (img.getpixel((i,j)))#打印该图片的所有点
             #print (data)#打印每个像素点的颜色RGBA的值(r,g,b,alpha)
             #print (data[0])#打印RGBA的r值
-            if data[0] == 159 and data[1] == 186 and data[2] == 193 and data[3] == 255:
-                img.putpixel((i,j),(255, 255, 255, 0))
+            #if data[0] == 159 and data[1] == 186 and data[2] == 193 and data[3] == 255:
+            #    img.putpixel((i,j),(255, 255, 255, 0))
+            img.putpixel((i,j),(255, 255, 255, 0))
             #if (data[0]>=170 and data[1]>=170 and data[2]>=170):#RGBA的r值大于170，并且g值大于170,并且b值大于170
             #  img.putpixel((i,j),(234, 53, 57, 255))#则这些像素点的颜色改成大红色
         
         img = img.convert("RGB")#把图片强制转成RGB
         img.save(output_dir + "/" + filename)#保存修改像素点后的图片
+
+change_pic_color()
+sys.exit()
 
 def change_pic_color_in_width():
     for filename in os.listdir(input_dir):

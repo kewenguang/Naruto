@@ -30,6 +30,12 @@ class Style():
         self.sprite_group.add(self.current_sprite)
         self.character[status_name].hidden = False
     
+    def set_current_sprite_hide(self):
+        self.current_sprite.hidden = True
+    
+    def set_current_sprite_show(self):
+        self.current_sprite.hidden = False
+        
     def get_left_padding(self):
         return self.current_sprite.get_left_padding()
     

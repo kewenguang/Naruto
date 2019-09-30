@@ -70,7 +70,7 @@ class NarutoStyle(Style):
         
         self.character["naruto/色诱之术"].set_frame_rate(7)
         
-        self.character["naruto/一个分身"].set_frame_rate(6)
+        self.character["naruto/一个分身"].set_frame_rate(20)
         #用来保存最初始的left_padding
         self.left_padding = self.get_left_padding()
             #character_sprite = self.add_sprite(naruto_image_url_2[i])
