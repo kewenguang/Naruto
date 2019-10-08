@@ -32,14 +32,19 @@ class Controller():
     def lianxufenshen(self):
         if self.insert_action_num > 5:
             self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
-            self.list_naruto[self.insert_action_num - 1].change_to_status_for_fenshen('idle')
+            self.list_naruto[self.insert_action_num - 1].change_to_status('结印')
+            for i in range(len(self.list_naruto)):
+                self.list_naruto[i].change_to_status_for_fenshen('idle')
+                self.naruto_style.change_to_status('idle')
             self.end_update_fenshen()
             return
         if self.insert_action_num != 0:
             self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
-            self.list_naruto[self.insert_action_num - 1].change_to_status_for_fenshen('idle')
+            self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
+            #self.list_naruto[self.insert_action_num - 1].change_to_status('一个分身')
         self.list_naruto[self.insert_action_num].set_current_sprite_show()
-        self.list_naruto[self.insert_action_num].append_end_update_yigefenshen(self.lianxufenshen)
+        self.list_naruto[self.insert_action_num].append_end_update_yigefenshen()#影分身结束之后去结印
+        self.list_naruto[self.insert_action_num].append_jieyin_end_func(self.lianxufenshen)
         self.insert_action_num = self.insert_action_num + 1
         
             
@@ -60,6 +65,7 @@ class Controller():
         if self.key_controller.key_m:
             self.list_naruto = []
             self.add_fenshen_to_group()
+            self.naruto_style.change_to_status('结印')
         elif self.key_controller.key_s:
             self.change_to_status('naruto/idle')
         
@@ -145,7 +151,7 @@ class Controller():
                 self.saske_style.append_end_update_huiquan(self.naruto_be_houyang)
                 self.saske_style.append_update_huiliangdao(self.naruto_be_houyang_with_image_index)
                 self.saske_style.append_end_update_up_ti(self.naruto_be_hit_far_away)
-        #问题 佐助悯人之间位置太靠近了  另外鸣人被打之后一直飞上飞下
+        
     
     def start_to_update(self):
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
@@ -169,7 +175,6 @@ class Controller():
                 self.saske_style.append_end_update_kai_pian_hui_shou(self.saske_end_update_kai_pian_hui_shou)
     
     #看看有没有用python来裁剪图片的
-    
     def update(self):
         if self.current_attack_player == 'naruto' and self.current_attacked_player == 'saske':
             self.naruto_attack_saske()

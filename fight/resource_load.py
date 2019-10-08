@@ -215,6 +215,9 @@ class CharacterSprite(pygame.sprite.Sprite):
     def clear_end_update_function(self):
         self.end_update_function.clear()
 
+    def clear_end_update_function_by_index(self, index):
+        self.end_update_function.pop(index)
+
     def set_left_padding(self, left_padding):
         self.rect.centerx = left_padding
         
