@@ -59,8 +59,10 @@ class Style():
     
 class GameCommonData():
     #窗体的宽高
-    WIDTH = 1200
+    WIDTH = 1300
     HEIGHT = 600
+    
+    character_level = HEIGHT - 200
     
     #游戏人物可移动的左右边界情况
     LeftPadding = 200

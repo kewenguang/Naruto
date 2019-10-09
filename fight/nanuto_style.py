@@ -32,7 +32,11 @@ class NarutoStyle(Style):
     def append_jieyin_end_func(self, func):
         self.character["naruto/结印"].append_end_update_function(func) 
         
-    def __init__(self):
+    #situation_flag为1的时候，正常的鸣人
+    #situation_flag为2的时候，单个分身的鸣人
+    #situation_flag为3的时候，多重影分身
+        
+    def __init__(self, situation_flag = 1):
         self.character = {}
         
         '''
@@ -50,44 +54,61 @@ class NarutoStyle(Style):
                             , "naruto/用头打", "naruto/反脚踢", "naruto/后仰", "naruto/翻身起来", "naruto/色诱之术", "naruto/一个分身",
                             "naruto/结印"]
         
+        if situation_flag == 1:
+            naruto_image_url = ["naruto/multi_shadow_separation", "naruto/idle", "naruto/death", "naruto/run", "naruto/挥拳"
+                            , "naruto/用头打", "naruto/反脚踢", "naruto/后仰", "naruto/翻身起来", "naruto/色诱之术", "naruto/一个分身",
+                            "naruto/结印"]
+        elif situation_flag == 2:
+            naruto_image_url = ["naruto/结印", "naruto/一个分身", "naruto/idle"]
+        elif situation_flag == 3:
+            naruto_image_url = ["naruto/multi_shadow_separation"]
+        
         #不应该这样笼统地加，而应该一个一个图集地添加  这样好确定应该放在什么位置 以及update里的内容是什么
         #并且所有图集都应该放在一个HashMap里面，这样比如按下了d键就知道显示哪个图集代表鸣人在往前走
         #left_begin = 60
         #top_begin = 200
         
-        
-        
         #考虑到加载图集会访问硬盘，所以一次性把需要的图集都加载进来
         for i in range(len(naruto_image_url)):
             self.add_sprite(naruto_image_url[i])
-        self.character["naruto/run"].append_update_function(self.update_run) 
-        self.current_sprite = self.character["naruto/idle"]
-        self.status = 'idle'
-        self.current_sprite.hidden = False
-        self.current_sprite.set_left_padding(60)
-        self.current_sprite.set_top_padding(200)
+            
+        if situation_flag == 1:
+            self.character["naruto/run"].append_update_function(self.update_run) 
+            self.character["naruto/挥拳"].append_end_update_function(self.naruto_status_to_touda)
+            self.character["naruto/挥拳"].set_frame_rate(8)
+            self.character["naruto/用头打"].append_end_update_function(self.naruto_status_to_fanjiaoti)
+            self.character["naruto/用头打"].set_frame_rate(8)
+            self.character["naruto/反脚踢"].append_end_update_function(self.naruto_status_to_idle)
+            
+            self.character["naruto/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
+            self.character["naruto/后仰"].set_frame_rate(8)
+            
+            self.character["naruto/death"].append_update_function(self.update_fall_down) 
+            self.character["naruto/death"].append_end_update_function(self.naruto_status_to_qilai) 
+            
+            self.character["naruto/翻身起来"].append_end_update_function(self.naruto_status_to_idle) 
+            self.character["naruto/翻身起来"].set_frame_rate(8)
+            
+            self.character["naruto/色诱之术"].set_frame_rate(7)
         
-        self.character["naruto/挥拳"].append_end_update_function(self.naruto_status_to_touda)
-        self.character["naruto/挥拳"].set_frame_rate(8)
-        self.character["naruto/用头打"].append_end_update_function(self.naruto_status_to_fanjiaoti)
-        self.character["naruto/用头打"].set_frame_rate(8)
-        self.character["naruto/反脚踢"].append_end_update_function(self.naruto_status_to_idle)
-        
-        self.character["naruto/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
-        self.character["naruto/后仰"].set_frame_rate(8)
-        
-        self.character["naruto/death"].append_update_function(self.update_fall_down) 
-        self.character["naruto/death"].append_end_update_function(self.naruto_status_to_qilai) 
-        
-        self.character["naruto/翻身起来"].append_end_update_function(self.naruto_status_to_idle) 
-        self.character["naruto/翻身起来"].set_frame_rate(8)
-        
-        self.character["naruto/色诱之术"].set_frame_rate(7)
-        
-        self.character["naruto/一个分身"].set_frame_rate(20)
-        
-        self.character["naruto/结印"].set_frame_rate(15)
-        self.character["naruto/结印"].append_end_update_function(self.set_naruto_jieyin_end_func) 
+
+        if situation_flag == 1 or situation_flag == 2: 
+            self.current_sprite = self.character["naruto/idle"]
+            self.status = 'idle'
+            self.current_sprite.hidden = False
+            self.current_sprite.set_left_padding(60)
+            self.current_sprite.set_top_padding(GameCommonData.character_level)
+            
+            self.character["naruto/一个分身"].set_frame_rate(20)
+            
+            self.character["naruto/结印"].set_frame_rate(15)
+            self.character["naruto/结印"].append_end_update_function(self.set_naruto_jieyin_end_func) 
+        elif situation_flag == 3:
+            self.current_sprite = self.character["naruto/multi_shadow_separation"]
+            self.status = 'multi_shadow_separation'
+            self.current_sprite.hidden = False
+            self.character["naruto/multi_shadow_separation"].set_frame_rate(23)
+            
         
         #用来保存最初始的left_padding
         self.left_padding = self.get_left_padding()
@@ -101,6 +122,9 @@ class NarutoStyle(Style):
     
     def set_left_padding(self, left_padding):
         self.current_sprite.set_left_padding(left_padding)
+    
+    def set_top_padding(self, top_padding):
+        self.current_sprite.set_top_padding(top_padding)
     
     def change_to_status_for_fenshen(self, status):
         if status == 'idle':

@@ -57,8 +57,10 @@ class SaskeStyle(Style):
         self.current_sprite = self.character["saske/idle"]
         self.status = 'idle'
         self.current_sprite.hidden = False
-        self.current_sprite.set_left_padding(GameCommonData.WIDTH - 60)
-        self.current_sprite.set_top_padding(200)
+        
+        self.start_left_padding = GameCommonData.WIDTH - 160
+        self.current_sprite.set_left_padding(self.start_left_padding)
+        self.current_sprite.set_top_padding(GameCommonData.character_level)
         
         self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
         self.character["saske/后仰"].set_frame_rate(8)
@@ -97,7 +99,7 @@ class SaskeStyle(Style):
             self.status = '站起来'
         elif cmd == '开篇挥手':
             Style.change_to_status(self, 'saske/开篇挥手')
-            self.current_sprite.set_left_padding(GameCommonData.WIDTH - 60)
+            self.current_sprite.set_left_padding(self.start_left_padding)
             self.status = '开篇挥手'
             
     def update(self):

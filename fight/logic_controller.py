@@ -29,14 +29,23 @@ class Controller():
     def end_update_fenshen(self):
         print("6个放完了，接下来是多重影分身")
         
+        #准备搞多重影分身
+        naruto = NarutoStyle(situation_flag = 3)
+        naruto.add_to_sprite_group(self.sprite_group)
+        naruto.set_key_controller(self.key_controller)
+        naruto.set_left_padding( self.saske_style.get_left_padding())
+        naruto.set_top_padding( self.saske_style.get_top_padding() + 105)
+        
+        for i in range(len(self.list_naruto)):
+            self.list_naruto[i].change_to_status_for_fenshen('idle')
+            self.naruto_style.change_to_status('idle')
+        
     def lianxufenshen(self):
         if self.insert_action_num > 5:
             self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
+            self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
             self.list_naruto[self.insert_action_num - 1].change_to_status('结印')
-            for i in range(len(self.list_naruto)):
-                self.list_naruto[i].change_to_status_for_fenshen('idle')
-                self.naruto_style.change_to_status('idle')
-            self.end_update_fenshen()
+            self.list_naruto[self.insert_action_num - 1].append_jieyin_end_func(self.end_update_fenshen)
             return
         if self.insert_action_num != 0:
             self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
@@ -50,7 +59,7 @@ class Controller():
             
     def add_fenshen_to_group(self):
         for i in range(6):
-            naruto = NarutoStyle()
+            naruto = NarutoStyle(situation_flag = 2)
             naruto.add_to_sprite_group(self.sprite_group)
             naruto.set_key_controller(self.key_controller)
             naruto.change_to_status('一个分身')
@@ -167,6 +176,7 @@ class Controller():
         #self.saske_style. redress_left_padding()
         
     def start(self):
+        return
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
             if self.sleep(1000):
                 self.naruto_style.change_to_status('色诱之术')
