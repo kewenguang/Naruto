@@ -19,6 +19,8 @@ class Controller():
         self.update_function = self.start
         self.insert_action_num = 0
         
+        self.test_flag = True
+        
     def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
         
@@ -70,11 +72,14 @@ class Controller():
         #单个分身的65-71是和做分身之术，所以重新捣鼓图片生成一下 以65为基准的分身之术
         #优化，注释掉那些不需要加载的图片，init方法应该可以自选加载哪些图片，可以加函数
             
+    def chu_fa_fen_shen(self):
+        self.list_naruto = []
+        self.add_fenshen_to_group()
+        self.naruto_style.change_to_status('结印')
+            
     def handle_key_event(self):
         if self.key_controller.key_m:
-            self.list_naruto = []
-            self.add_fenshen_to_group()
-            self.naruto_style.change_to_status('结印')
+            self.chu_fa_fen_shen()
         elif self.key_controller.key_s:
             self.change_to_status('naruto/idle')
         
@@ -175,7 +180,40 @@ class Controller():
         self.start_to_update()
         #self.saske_style. redress_left_padding()
         
+    #下面的函数为了测试方便           下面的代码都转移到init里面去实现一整套流程，佐助被打会后仰
+    def naruto_change_status_to_luoswan(self):
+        self.test_naruto.set_left_padding(467)
+        self.test_naruto.change_to_status("螺旋丸")
+    
+    def naruto_luoxuanwan_update_set_leftpadding(self, image_index):
+        print('image_index:' + str(image_index))
+        if image_index == 13:
+            self.test_naruto.character["naruto/螺旋丸"].set_left_padding(self.test_naruto.character["naruto/螺旋丸"].get_left_padding() + 10)
+        elif image_index == 14:
+            self.test_naruto.character["naruto/螺旋丸"].set_left_padding(self.test_naruto.character["naruto/螺旋丸"].get_left_padding() + 20)
+        elif image_index == 15:
+            between_padding = self.saske_style.get_left_padding() - self.test_naruto.character["naruto/螺旋丸"].get_left_padding()
+            print('between_padding:' + str(between_padding))
+            if between_padding > 65:
+                print('between_padding--------:' + str(between_padding))
+                self.test_naruto.character["naruto/螺旋丸"].set_left_padding(self.test_naruto.character["naruto/螺旋丸"].get_left_padding() + 25)
+                self.test_naruto.character["naruto/螺旋丸"].image_index = 14
+    
+    def test_naruto_change_to_idle(self):
+        self.test_naruto.change_to_status_for_fenshen('idle')
+    
     def start(self):
+        if self.test_flag:
+            #这里添加一个Naruto，设置初始位置，然后变换状态为螺旋丸，拿着螺旋丸一阵狂奔，摔到佐助的脸上，这个位置怎么控制需要打量一下
+            self.test_naruto = NarutoStyle(situation_flag = 2)
+            self.test_naruto.add_to_sprite_group(self.sprite_group)
+            self.test_naruto.set_left_padding(450)
+            #naruto.remove_from_sprite_group(self.sprite_group)
+            self.test_naruto.change_to_status_for_fenshen("idle")
+            self.test_naruto.character["naruto/idle"].append_end_update_function(self.naruto_change_status_to_luoswan)
+            self.test_naruto.character["naruto/螺旋丸"].append_update_function(self.naruto_luoxuanwan_update_set_leftpadding)
+            self.test_naruto.character["naruto/螺旋丸"].append_end_update_function(self.test_naruto_change_to_idle)
+            self.test_flag = False
         return
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
             if self.sleep(1000):

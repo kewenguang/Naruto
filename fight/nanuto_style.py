@@ -32,6 +32,7 @@ class NarutoStyle(Style):
     def append_jieyin_end_func(self, func):
         self.character["naruto/结印"].append_end_update_function(func) 
         
+    
     #situation_flag为1的时候，正常的鸣人
     #situation_flag为2的时候，单个分身的鸣人
     #situation_flag为3的时候，多重影分身
@@ -59,7 +60,7 @@ class NarutoStyle(Style):
                             , "naruto/用头打", "naruto/反脚踢", "naruto/后仰", "naruto/翻身起来", "naruto/色诱之术", "naruto/一个分身",
                             "naruto/结印"]
         elif situation_flag == 2:
-            naruto_image_url = ["naruto/结印", "naruto/一个分身", "naruto/idle"]
+            naruto_image_url = ["naruto/结印", "naruto/一个分身", "naruto/idle", "naruto/螺旋丸"]
         elif situation_flag == 3:
             naruto_image_url = ["naruto/multi_shadow_separation"]
         
@@ -91,7 +92,9 @@ class NarutoStyle(Style):
             
             self.character["naruto/色诱之术"].set_frame_rate(7)
         
-
+        if situation_flag == 2:
+            self.character["naruto/螺旋丸"].set_frame_rate(11)
+        
         if situation_flag == 1 or situation_flag == 2: 
             self.current_sprite = self.character["naruto/idle"]
             self.status = 'idle'
@@ -167,6 +170,9 @@ class NarutoStyle(Style):
         elif status == '结印':
             Style.change_to_status(self, 'naruto/结印')
             self.status = '结印'
+        elif status == '螺旋丸':
+            Style.change_to_status(self, 'naruto/螺旋丸')
+            self.status = '螺旋丸'
             
     def update(self):
         if self.key_controller.key_d:

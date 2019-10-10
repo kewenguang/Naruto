@@ -47,6 +47,9 @@ class Style():
         self.sprite_group = sprite_group
         self.sprite_group.add(self.current_sprite)
         
+    def remove_from_sprite_group(self, sprite_group):
+        self.sprite_group = sprite_group
+        self.sprite_group.remove_internal(self.current_sprite)
     #外面需要设置的
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
