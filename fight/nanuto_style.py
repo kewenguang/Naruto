@@ -94,6 +94,9 @@ class NarutoStyle(Style):
         
         if situation_flag == 2:
             self.character["naruto/螺旋丸"].set_frame_rate(11)
+            self.character["naruto/螺旋丸"].append_update_function(self.luoxuanwan_update_set_leftpadding)
+            self.character["naruto/螺旋丸"].append_end_update_function(self.change_to_status_idle)
+            self.character["naruto/螺旋丸"].append_end_update_function(self.remove_current_sprite_from_sprite_group)
         
         if situation_flag == 1 or situation_flag == 2: 
             self.current_sprite = self.character["naruto/idle"]
@@ -102,26 +105,51 @@ class NarutoStyle(Style):
             self.current_sprite.set_left_padding(60)
             self.current_sprite.set_top_padding(GameCommonData.character_level)
             
-            self.character["naruto/一个分身"].set_frame_rate(20)
+            self.character["naruto/一个分身"].set_frame_rate(23)
             
-            self.character["naruto/结印"].set_frame_rate(15)
+            self.character["naruto/结印"].set_frame_rate(18)
             self.character["naruto/结印"].append_end_update_function(self.set_naruto_jieyin_end_func) 
         elif situation_flag == 3:
             self.current_sprite = self.character["naruto/multi_shadow_separation"]
             self.status = 'multi_shadow_separation'
             self.current_sprite.hidden = False
             self.character["naruto/multi_shadow_separation"].set_frame_rate(23)
-            
+            self.character["naruto/multi_shadow_separation"].append_end_update_function(self.remove_current_sprite_from_sprite_group)
         
         #用来保存最初始的left_padding
         self.left_padding = self.get_left_padding()
+        
+
             #character_sprite = self.add_sprite(naruto_image_url_2[i])
             #top_begin = top_begin + 130
             #if top_begin > GameCommonData.HEIGHT:
                 #top_begin = 120
                 #left_begin = left_begin + 120
                 
+        
     #这个update处理键盘响应，然后移动图集，不处理图片更新，图片更新由sprite_group负责
+    
+    #def remove_multi_shadow_separation(self):
+    #    self.remove_current_sprite_from_sprite_group()
+    
+    def set_saske(self, saske):
+        self.saske = saske
+    
+    def luoxuanwan_update_set_leftpadding(self, image_index):
+        print('image_index:' + str(image_index))
+        if image_index == 13:
+            self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 10)
+        elif image_index == 14:
+            self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 20)
+        elif image_index == 15:
+            between_padding = self.saske.get_left_padding() - self.character["naruto/螺旋丸"].get_left_padding()
+            print('between_padding:' + str(between_padding))
+            if between_padding > 65:
+                print('between_padding--------:' + str(between_padding))
+                self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 25)
+                self.character["naruto/螺旋丸"].image_index = 14
+        elif image_index == 16:
+            self.saske.change_to_status('后仰')
     
     def set_left_padding(self, left_padding):
         self.current_sprite.set_left_padding(left_padding)
@@ -134,6 +162,9 @@ class NarutoStyle(Style):
             Style.change_to_status(self, 'naruto/idle')
             self.status = 'idle'
             
+    def change_to_status_idle(self):
+        self.change_to_status_for_fenshen('idle')
+        
     def change_to_status(self, status):
         if status == 'run':
             Style.change_to_status(self, 'naruto/run')
@@ -172,6 +203,7 @@ class NarutoStyle(Style):
             self.status = '结印'
         elif status == '螺旋丸':
             Style.change_to_status(self, 'naruto/螺旋丸')
+            self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 17)
             self.status = '螺旋丸'
             
     def update(self):

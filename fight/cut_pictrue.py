@@ -57,8 +57,8 @@ def change_pic_color():
         img = img.convert("RGB")#把图片强制转成RGB
         img.save(output_dir + "/" + filename)#保存修改像素点后的图片
 
-change_pic_color()
-sys.exit()
+#change_pic_color()
+#sys.exit()
 
 def change_pic_color_in_width():
     for filename in os.listdir(input_dir):
@@ -169,4 +169,80 @@ def add_one_pictrue_to_another_white_background():
         img.save(output_dir + "/" + filename)#保存修改像素点后的图片
         break
         
-add_one_pictrue_to_another_white_background()
+one_pictrue_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/叠加之前'
+another_pic_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/叠加之后的图片'
+yunduo_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/云朵'
+def add_one_pictrue_to_another_with_anchor():
+    one_pictrue_img = Image.open(one_pictrue_dir + "/" + '188.png')
+    print (one_pictrue_img.size)
+    yunduo1_img = Image.open(yunduo_dir + "/" + '210.png')
+    yunduo2_img = Image.open(yunduo_dir + "/" + '226.png')
+    
+    start_left_padding = 85#93
+    start_top_padding = 14#22
+    data_left_top = yunduo1_img.getpixel((0, 0))
+    for i in range(yunduo1_img.size[0]):
+        for j in range(yunduo1_img.size[1]):
+            data = (yunduo1_img.getpixel((i, j)))
+            if data[0] == data_left_top[0] and data[1] == data_left_top[1] and data[2] == data_left_top[2] and data[3] == data_left_top[3]:
+                continue
+            one_pictrue_img.putpixel((start_left_padding + i, start_top_padding + j), (data[0], data[1], data[2], data[3]))
+    one_pictrue_img.convert("RGBA")
+    one_pictrue_img.save(another_pic_dir + "/188.png")
+    
+    data_left_top = yunduo2_img.getpixel((0, 0))
+    for i in range(yunduo2_img.size[0]):
+        for j in range(yunduo2_img.size[1]):
+            data = (yunduo2_img.getpixel((i, j)))
+            if data[0] == data_left_top[0] and data[1] == data_left_top[1] and data[2] == data_left_top[2] and data[3] == data_left_top[3]:
+                continue
+            one_pictrue_img.putpixel((start_left_padding + i, start_top_padding + j), (data[0], data[1], data[2], data[3]))
+    one_pictrue_img.convert("RGBA")
+    one_pictrue_img.save(another_pic_dir + "/189.png")
+    
+    
+    image_name = ['228.png', '230.png', '232.png']
+    for index in range(len(image_name)):
+        for i in range(one_pictrue_img.size[0]):
+            for j in range(one_pictrue_img.size[1]):
+                one_pictrue_img.putpixel((i, j), (data_left_top[0], data_left_top[1], data_left_top[2], data_left_top[3]))
+        yunduo1_img = Image.open(yunduo_dir + "/" + image_name[index])
+        for i in range(yunduo1_img.size[0]):
+            for j in range(yunduo1_img.size[1]):
+                data = (yunduo1_img.getpixel((i, j)))
+                if start_left_padding + i < one_pictrue_img.size[0] and start_top_padding + j < one_pictrue_img.size[1]:
+                    one_pictrue_img.putpixel((start_left_padding + i, start_top_padding + j), (data[0], data[1], data[2], data[3]))
+        one_pictrue_img.convert("RGBA")
+        one_pictrue_img.save(another_pic_dir + "/" + image_name[index])
+    
+    '''
+    for filename in os.listdir(another_pic_dir):
+        i = 1
+        j = 1
+        img = Image.open(another_pic_dir + "/" + filename)#读取系统的内照片
+        print (img.size)#打印图片大小
+        
+        width = img.size[0]#长度
+        print('img.size[0]:' + str(img.size[0]))
+        print('img.size[1]:' + str(img.size[1]))
+        
+        left_pix = int(width/2 - one_pictrue_img.size[0]/2)
+        right_pix = int(width/2 + one_pictrue_img.size[0]/2)
+        
+        data_left_top = img.getpixel((0, 0))
+        print('data_left_top:' + str(data_left_top))
+        for i in range(left_pix, right_pix, 1):#遍历所有长度的点
+          for j in range(0, one_pictrue_img.size[1]):#遍历所有宽度的点
+            data = (img.getpixel((i, j+10)))#加10是为了被贴上去的图片整体下移10个像素
+            #print (data)#打印每个像素点的颜色RGBA的值(r,g,b,alpha)
+            #print (data[0])#打印RGBA的r值
+            if data[0] == data_left_top[0] and data[1] == data_left_top[1] and data[2] == data_left_top[2]:
+                data_added = one_pictrue_img.getpixel((i-left_pix, j))
+                img.putpixel((i,j+10),(data_added[0], data_added[1], data_added[2], data_added[3]))
+            #if (data[0]>=170 and data[1]>=170 and data[2]>=170):#RGBA的r值大于170，并且g值大于170,并且b值大于170
+            #  img.putpixel((i,j),(234, 53, 57, 255))#则这些像素点的颜色改成大红色
+        
+        img = img.convert("RGBA")#把图片强制转成RGBA
+        img.save(output_dir + "/" + filename)#保存修改像素点后的图片'''
+        
+add_one_pictrue_to_another_with_anchor()

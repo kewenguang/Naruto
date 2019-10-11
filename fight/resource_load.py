@@ -50,6 +50,9 @@ class Style():
     def remove_from_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
         self.sprite_group.remove_internal(self.current_sprite)
+        
+    def remove_current_sprite_from_sprite_group(self):
+        self.sprite_group.remove_internal(self.current_sprite)
     #外面需要设置的
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
@@ -62,7 +65,7 @@ class Style():
     
 class GameCommonData():
     #窗体的宽高
-    WIDTH = 1300
+    WIDTH = 1500
     HEIGHT = 600
     
     character_level = HEIGHT - 200
