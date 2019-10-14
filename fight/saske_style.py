@@ -25,7 +25,8 @@ class SaskeStyle(Style):
     def saske_status_to_up_ti(self):
         self.change_to_status('向上一脚')
         
-    def __init__(self):
+    def __init__(self, sprite_group):
+        self.sprite_group = sprite_group
         self.character = {}
         saske_image_url = ['saske/倒在地上', 'saske/挥刀',
                             'saske/挥两刀', 'saske/挥拳',
@@ -35,6 +36,7 @@ class SaskeStyle(Style):
         for i in range(len(saske_image_url)):
             print('saske_image_url[i]:' + saske_image_url[i])
             self.add_sprite(saske_image_url[i], need_flip = True)
+            
         self.character["saske/run"].append_update_function(self.update_run) 
         self.character["saske/倒在地上"].append_update_function(self.update_fall_down) 
         self.character["saske/倒在地上"].append_end_update_function(self.saske_status_to_qilai) 
@@ -52,29 +54,42 @@ class SaskeStyle(Style):
         self.character["saske/向上一脚"].append_end_update_function(self.saske_status_to_idle)
         self.character["saske/向上一脚"].set_frame_rate(8)
         
+        #这个后仰的是一直存在于sprite_group里面的，所以以后你要切换人物，一定要把后仰删掉，而不是单单删除current_sprite
         self.character["saske/后仰"].set_image_update_bounce(False)
+        self.sprite_group.add(self.character["saske/后仰"])   #self.character["saske/后仰"].hidden = False  如果这个后仰设置为True则会一直卡在第一张图片
+        self.character["saske/后仰"].set_top_padding(1000)
+        self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
+        self.character["saske/后仰"].set_frame_rate(8)
         
+        #self.sprite_group.add(self.character["saske/idle"])
         self.current_sprite = self.character["saske/idle"]
         self.status = 'idle'
         self.current_sprite.hidden = False
+        
         
         self.start_left_padding = GameCommonData.WIDTH - 160
         self.current_sprite.set_left_padding(self.start_left_padding)
         self.current_sprite.set_top_padding(GameCommonData.character_level)
         
-        self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
-        self.character["saske/后仰"].set_frame_rate(8)
-        
+
         self.character["saske/开篇挥手"].set_frame_rate(8)
         
         self.fall_down_interval = 0
+    
+    def change_to_houyang(self):
+        if not self.status == '后仰':
+            self.change_to_status_just_show('saske/后仰')
+            self.status = '后仰'
     
     def change_to_status(self, cmd):
         if cmd == 'run':
             Style.change_to_status(self, 'saske/run')
             self.status = 'run'
         elif cmd == 'idle':
-            Style.change_to_status(self, 'saske/idle')
+            if self.status == '后仰':
+                self.change_to_status_with_no_remove_origin('saske/idle')
+            else:
+                Style.change_to_status(self, 'saske/idle')
             self.status = 'idle'
         elif cmd == '倒在地上':
             Style.change_to_status(self, 'saske/倒在地上')
@@ -150,5 +165,5 @@ class SaskeStyle(Style):
         if func:
             self.character["saske/开篇挥手"].append_end_update_function(func)
             
-    def  redress_left_padding(self):
+    def redress_left_padding(self):
         self.current_sprite.set_left_padding(self.current_sprite.get_left_padding() + 10)

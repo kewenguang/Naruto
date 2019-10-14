@@ -7,11 +7,13 @@ import time
 
 from fight.nanuto_style import NarutoStyle
 from fight.saske_style import SaskeStyle
+from fight import saske_style
 
 class Controller():
-    def __init__(self):
-        self.naruto_style = NarutoStyle()
-        self.saske_style = SaskeStyle()
+    def __init__(self, sprite_group):
+        self.naruto_style = NarutoStyle(sprite_group)
+        self.saske_style = SaskeStyle(sprite_group)
+        self.sprite_group = sprite_group
         self.current_attack_player = "naruto"
         self.current_attacked_player = 'saske'
         #self.t = time.time()
@@ -28,19 +30,30 @@ class Controller():
         for i in range(len(self.list_naruto)):
             self.sprite_group.remove_internal(self.list_naruto[i])
         
+        
+    #鸣人特效##############################################################################################
+    def sub_insert_action_num(self):
+        self.insert_action_num = self.insert_action_num - 1
+        print('self.insert_action_num:' + str(self.insert_action_num))
+    
     def multi_shadow_separation_end(self):
         for i in range(len(self.list_naruto)):
             self.list_naruto[i].change_to_status('螺旋丸')
+            self.list_naruto[i].character['naruto/螺旋丸'].append_end_update_function(self.sub_insert_action_num)
             
+    def multi_shadow_separation_update(self, image_index):
+        if image_index % 5 == 0 and image_index < 62 and image_index > 9:
+            self.saske_style.change_to_houyang()
         
     def end_update_fenshen(self):
         print("6个放完了，接下来是多重影分身")
         
-        naruto = NarutoStyle(situation_flag = 3)
-        naruto.add_to_sprite_group(self.sprite_group)
+        naruto = NarutoStyle(self.sprite_group, situation_flag = 3)
+        naruto.add_to_sprite_group()
         naruto.set_key_controller(self.key_controller)
         naruto.set_left_padding( self.saske_style.get_left_padding())
         naruto.set_top_padding( self.saske_style.get_top_padding() + 105)
+        naruto.character['naruto/multi_shadow_separation'].append_update_function(self.multi_shadow_separation_update)
         
         for i in range(len(self.list_naruto)):
             self.list_naruto[i].change_to_status_for_fenshen('idle')
@@ -48,6 +61,7 @@ class Controller():
             self.naruto_style.change_to_status('idle')
         
         naruto.character["naruto/multi_shadow_separation"].append_end_update_function(self.multi_shadow_separation_end)
+        
         
     def lianxufenshen(self):
         if self.insert_action_num > self.fenshen_num - 1:
@@ -69,8 +83,8 @@ class Controller():
     def add_fenshen_to_group(self):
         self.fenshen_num = 4
         for i in range(self.fenshen_num):
-            naruto = NarutoStyle(situation_flag = 2)
-            naruto.add_to_sprite_group(self.sprite_group)
+            naruto = NarutoStyle(self.sprite_group, situation_flag = 2)
+            naruto.add_to_sprite_group()
             naruto.set_key_controller(self.key_controller)
             naruto.change_to_status('一个分身')
             naruto.set_left_padding((len(self.list_naruto) + 1) * 170 + len(self.list_naruto) * 120)
@@ -84,14 +98,19 @@ class Controller():
         self.list_naruto = []
         self.add_fenshen_to_group()
         self.naruto_style.change_to_status('结印')
+    #鸣人特效##############################################################################################
             
+    #佐助特效##############################################################################################
+    def xu_zuo(self):
+        return
+    #佐助特效##############################################################################################
+    
     def handle_key_event(self):
         if self.key_controller.key_m:
             self.chu_fa_fen_shen()
         elif self.key_controller.key_s:
             self.change_to_status('naruto/idle')
-        
-        
+    
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
         
@@ -107,9 +126,9 @@ class Controller():
                 return True
         
     def ready(self):
-        self.naruto_style.add_to_sprite_group(self.sprite_group)
+        self.naruto_style.add_to_sprite_group()
         self.naruto_style.set_key_controller(self.key_controller)
-        self.saske_style.add_to_sprite_group(self.sprite_group)
+        self.saske_style.add_to_sprite_group()
         self.saske_style.set_key_controller(self.key_controller)
     
     def saske_be_hit_far_away(self):
@@ -121,9 +140,6 @@ class Controller():
         self.naruto_style.change_to_status('death')
         self.current_attack_player = 'naruto'
         self.current_attacked_player = 'saske'
-    
-    def saske_be_houyang(self):
-        self.saske_style.change_to_status('后仰')
         
     def naruto_be_houyang(self):
         self.naruto_style.change_to_status('后仰')
@@ -142,12 +158,12 @@ class Controller():
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
             self.handle_key_event()
-            
+
             if self.insert_action_num == 0 and self.sleep(3000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
                 self.saske_style.change_to_status('run')
-            return True
+
         return False
     
     def naruto_attack_saske(self):
@@ -157,8 +173,8 @@ class Controller():
             #print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
             if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 84:
                 self.naruto_style.change_to_status('挥拳')
-                self.naruto_style.append_end_update_huiquan(self.saske_be_houyang)
-                self.naruto_style.append_end_update_yongtouda(self.saske_be_houyang)
+                self.naruto_style.append_end_update_huiquan(self.saske_style.change_to_houyang())
+                self.naruto_style.append_end_update_yongtouda(self.saske_style.change_to_houyang())
                 self.naruto_style.append_end_update_fanjiaoti(self.saske_be_hit_far_away)
                 
         #后仰的时候，先顺着波，然后倒着播，中途被打了再顺着播，然后倒着播，播完了就变成idle了
@@ -188,8 +204,6 @@ class Controller():
         self.start_to_update()
         #self.saske_style. redress_left_padding()
         
-    
-    
     def start(self):
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
             if self.sleep(1000):

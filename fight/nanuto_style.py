@@ -37,7 +37,8 @@ class NarutoStyle(Style):
     #situation_flag为2的时候，单个分身的鸣人
     #situation_flag为3的时候，多重影分身
         
-    def __init__(self, situation_flag = 1):
+    def __init__(self, sprite_group, situation_flag = 1):
+        self.sprite_group = sprite_group
         self.character = {}
         
         '''
@@ -116,6 +117,8 @@ class NarutoStyle(Style):
             self.character["naruto/multi_shadow_separation"].set_frame_rate(23)
             self.character["naruto/multi_shadow_separation"].append_end_update_function(self.remove_current_sprite_from_sprite_group)
         
+        
+        
         #用来保存最初始的left_padding
         self.left_padding = self.get_left_padding()
         
@@ -136,16 +139,14 @@ class NarutoStyle(Style):
         self.saske = saske
     
     def luoxuanwan_update_set_leftpadding(self, image_index):
-        print('image_index:' + str(image_index))
         if image_index == 13:
             self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 10)
         elif image_index == 14:
             self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 20)
         elif image_index == 15:
             between_padding = self.saske.get_left_padding() - self.character["naruto/螺旋丸"].get_left_padding()
-            print('between_padding:' + str(between_padding))
+
             if between_padding > 65:
-                print('between_padding--------:' + str(between_padding))
                 self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 25)
                 self.character["naruto/螺旋丸"].image_index = 14
         elif image_index == 16:

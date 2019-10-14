@@ -13,6 +13,8 @@ import sys
 #input_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/色诱之术剪切前'
 #output_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/色诱之术剪切后'
 
+prefix_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/'
+
 input_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/裁剪之前的图片'
 output_dir = 'E:/追捕/火影忍者模型/杂七杂八地搜集/2d资源/死神VS火影/反编译得到资源/鸣人/裁剪之后的图片'
 def change_pic_width():
@@ -245,4 +247,48 @@ def add_one_pictrue_to_another_with_anchor():
         img = img.convert("RGBA")#把图片强制转成RGBA
         img.save(output_dir + "/" + filename)#保存修改像素点后的图片'''
         
-add_one_pictrue_to_another_with_anchor()
+#add_one_pictrue_to_another_with_anchor()
+#input_dir = prefix_dir + '佐助长大了/须左'
+input_dir = prefix_dir + '佐助长大了/须左的箭'
+output_dir = prefix_dir + '佐助长大了/添加到白板的图'
+
+def flush_image_to_white(img):
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            img.putpixel((i,j),(255, 255, 255, 255))
+    return img
+            
+def add_pix_to_white():
+    width_largest = 0
+    height_largest = 0
+    img_file_name = ''
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        if img.size[0] > width_largest:
+            width_largest = img.size[0]
+        if img.size[1] > height_largest:
+            height_largest = img.size[1]
+    
+    for filename in os.listdir(input_dir):
+        img_file_name = filename
+    white_img = Image.open(input_dir + "/" + img_file_name)
+    cropped = white_img.crop((0, 0, width_largest, height_largest)) 
+    white_img = flush_image_to_white(cropped)
+        
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+
+        img_temp =  white_img.copy()
+        left_pixel_padding = int(width_largest/2 - img.size[0]/2)
+        top_pixel_padding = height_largest - img.size[1]
+        top_left = img.getpixel((0, 0))
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if top_left[0] == data[0] and top_left[1] == data[1] and top_left[2] == data[2] and top_left[3] == data[3]:
+                    continue
+                img_temp.putpixel((left_pixel_padding + i, top_pixel_padding + j), (data[0], data[1], data[2], data[3]))
+        img_temp.convert("RGBA")
+        img_temp.save(output_dir + "/" + filename)
+        
+add_pix_to_white()

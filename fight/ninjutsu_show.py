@@ -30,9 +30,11 @@ pygame.display.set_caption("Naruto")
 
 all_sprites = pygame.sprite.Group()
 
-logic_controller = Controller()
+#all_sprites.has_internal(sprite)
+
+logic_controller = Controller(all_sprites)
 logic_controller.set_key_controller(key_controller)
-logic_controller.set_sprite_group(all_sprites)
+#logic_controller.set_sprite_group(all_sprites)
 logic_controller.ready()
 
 running = True

@@ -21,14 +21,36 @@ class Color():
     YELLOW = (255, 255, 0)
 
 class Style():
-    def change_to_status(self, status_name):
+    
+    def change_to_status_common(self,status_name):
         self.sprite_group.remove_internal(self.current_sprite)
         self.current_sprite.hidden = True
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
         self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
         self.current_sprite = self.character[status_name]
-        self.sprite_group.add(self.current_sprite)
         self.character[status_name].hidden = False
+        
+    def change_to_status(self, status_name):
+        self.change_to_status_common(status_name)
+        self.sprite_group.add(self.current_sprite)
+    
+    def change_to_status_with_no_remove_origin(self, status_name):
+        self.current_sprite.hidden = True
+        self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
+        self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
+        self.current_sprite.set_top_padding(1000)
+        self.current_sprite = self.character[status_name]
+        self.character[status_name].hidden = False
+        self.sprite_group.add(self.current_sprite)
+    
+    def change_to_status_just_show(self, status_name): #已经添加到sprite_group中，只是改变现实状态
+        self.current_sprite.hidden = True
+        self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
+        self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
+        #self.sprite_group.remove_internal(self.current_sprite)
+        self.current_sprite.set_top_padding(1000)
+        self.current_sprite = self.character[status_name]
+        self.current_sprite.hidden = False
     
     def set_current_sprite_hide(self):
         self.current_sprite.hidden = True
@@ -42,9 +64,11 @@ class Style():
     def get_top_padding(self):
         return self.current_sprite.get_top_padding()
     
-    #外面需要设置的
-    def add_to_sprite_group(self, sprite_group):
+    def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
+
+    #外面需要设置的
+    def add_to_sprite_group(self):
         self.sprite_group.add(self.current_sprite)
         
     def remove_from_sprite_group(self, sprite_group):
