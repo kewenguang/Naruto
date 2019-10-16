@@ -51,10 +51,10 @@ class NarutoStyle(Style):
                             "naruto/挥拳", "naruto/举螺旋丸", "naruto/空中一脚", "naruto/螺旋丸", "naruto/螺旋丸击中",
                             "naruto/扔手里剑", "naruto/色诱之术", "naruto/下按螺旋丸", "naruto/向上一脚",
                             "naruto/用头打", "naruto/云朵", "naruto/风遁螺旋丸", "naruto/风遁螺旋丸爆炸", "naruto/一个分身", "naruto/结印"]
-        '''
+        
         naruto_image_url = ["naruto/multi_shadow_separation", "naruto/idle", "naruto/death", "naruto/run", "naruto/挥拳"
                             , "naruto/用头打", "naruto/反脚踢", "naruto/后仰", "naruto/翻身起来", "naruto/色诱之术", "naruto/一个分身",
-                            "naruto/结印"]
+                            "naruto/结印"]'''
         
         if situation_flag == 1:
             naruto_image_url = ["naruto/multi_shadow_separation", "naruto/idle", "naruto/death", "naruto/run", "naruto/挥拳"

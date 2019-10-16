@@ -291,4 +291,62 @@ def add_pix_to_white():
         img_temp.convert("RGBA")
         img_temp.save(output_dir + "/" + filename)
         
-add_pix_to_white()
+#add_pix_to_white()
+
+input_dir = prefix_dir + '佐助长大了/添加到白板的图'
+output_dir = prefix_dir + '佐助长大了/对称中心添加图片'
+def cut_off_white_left_padding():
+    #给每一个图片设置一个中心线， 以中心线为基准进行图片刷到白板上的操作，每一张原图都有自己的中心线
+    #列表的前面5个是还没有成型的须左，中轴线保持和第六个须左一致
+    left_padding = [220, 220, 220, 220, 220, 220, 226, 223, 228, 233, 214, 210, 150, 210]
+    
+    img = Image.open(input_dir + "/531.png")   #150是最小的
+    width_img = img.size[0] + 83 # 宽度-最小左边距=最大右边距   最大左边距即为最大左边  两者相加是最终的宽度
+    cropped = img.crop((0, 0, width_img, img.size[1]))
+    for i in range(cropped.size[0]):
+        for j in range(cropped.size[1]):
+            cropped.putpixel((i, j), (255, 255, 255, 255))
+    
+    index_padding = 0
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        img_temp =  cropped.copy()
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if int(img_temp.size[0]/2) - left_padding[index_padding] + i < img_temp.size[0]:
+                    img_temp.putpixel(( int(img_temp.size[0]/2) - left_padding[index_padding] + i, j), (data[0], data[1], data[2], data[3]))
+        index_padding = index_padding + 1
+        img_temp.save(output_dir + "/" + filename)
+
+input_dir = prefix_dir + '佐助长大了/添加到白板的图'
+output_dir = prefix_dir + '佐助长大了/对称中心添加图片'
+def resize_pic():
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        out = img.resize((int(img.size[0]/3), int(img.size[1]/2)))
+        out.save(output_dir + "/" + filename)
+
+#resize_pic()
+input_dir = prefix_dir + '佐助长大了/写轮眼'
+output_dir = prefix_dir + '佐助长大了/写轮眼处理'
+def change_to_transparent():
+    color_set = set()
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if data[0] == 0 and data[1] == 0 and data[2] == 0 and data[3] == 0:
+                    img.putpixel((i, j), (255,255,255,255))
+                if i == 35 and j == 17 and filename == '345.png':
+                    print(i,j,data[0], data[1], data[2], data[3])
+                if i == 1 and j == 1 and filename == '345.png':
+                    print(i,j,data[0], data[1], data[2], data[3])
+                #   print(i,j,data[0], data[1], data[2], data[3])
+        img.save(output_dir + "/" + filename)
+                
+    #for item in color_set:
+    #    print(item)
+        
+change_to_transparent()

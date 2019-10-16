@@ -244,6 +244,9 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.end_update_function.append(func)
         return len(self.end_update_function) - 1
 
+    def clear_update_function(self):
+        self.update_function.clear()
+
     def clear_end_update_function(self):
         self.end_update_function.clear()
 

@@ -99,15 +99,59 @@ class Controller():
         self.add_fenshen_to_group()
         self.naruto_style.change_to_status('结印')
     #鸣人特效##############################################################################################
+    
+    
+    #佐助特效##############################################################################################
+    def xuzuo_jian_update(self, image_index):
+        left_padding = self.saske_xuzuo_jian.character['saske/须左的箭'].get_left_padding()
+        if left_padding - self.naruto_style.get_left_padding() < 30:
+            self.saske_xuzuo_jian.remove_current_sprite()
+            self.naruto_style.change_to_status('death')
+            self.saske_xuzuo.character['saske/须左'].clear_update_function()
+            #self.saske_xuzuo_jian.character['saske/须左的箭'].image_index = 14
+        else:
+            self.saske_xuzuo_jian.character['saske/须左的箭'].set_left_padding(left_padding - 120)
+    
+    def xuzuo_update(self, image_index):
+        if image_index == 12:
+            self.saske_xuzuo_jian = SaskeStyle(self.sprite_group, situation_flag = 3)
+            self.saske_xuzuo_jian.set_left_padding(self.saske_style.get_left_padding() - 200)
+            self.saske_xuzuo_jian.set_top_padding(self.saske_style.get_top_padding() - 30)
+            self.saske_xuzuo_jian.character['saske/须左的箭'].append_update_function(self.xuzuo_jian_update)
+        elif image_index == 14:
+            self.saske_xuzuo.character['saske/须左'].image_index = 13
             
-    #佐助特效##############################################################################################
     def xu_zuo(self):
-        return
+        self.saske_xielunyan.remove_current_sprite()
+        self.saske_xuzuo = SaskeStyle(self.sprite_group, situation_flag = 2)
+        self.saske_xuzuo.set_left_padding(self.saske_style.get_left_padding())
+        self.saske_xuzuo.set_top_padding(self.saske_style.get_top_padding() + 20)
+        self.saske_xuzuo.character['saske/须左'].append_update_function(self.xuzuo_update)
+        self.saske_xuzuo.character['saske/须左'].append_end_update_function(self.saske_xuzuo.remove_current_sprite)
+        
+    def xie_lun_yan(self):
+        self.saske_xielunyan = SaskeStyle(self.sprite_group, situation_flag = 4)
+        self.saske_xielunyan.set_left_padding(self.saske_style.get_left_padding() - 40)
+        self.saske_xielunyan.set_top_padding(self.saske_style.get_top_padding() - 40)
+        self.saske_xielunyan.character['saske/写轮眼'].append_end_update_function(self.xu_zuo)
     #佐助特效##############################################################################################
+    
+    
+    #我爱罗特效##############################################################################################
+    def songzang(self):
+        print('送葬')
+        
+    def add_wo_ai_luo(self):
+        print('我爱罗')
+    #我爱罗特效##############################################################################################
     
     def handle_key_event(self):
         if self.key_controller.key_m:
             self.chu_fa_fen_shen()
+        elif self.key_controller.key_w:
+            self.xie_lun_yan()
+        elif self.key_controller.key_a:
+            self.add_wo_ai_luo()
         elif self.key_controller.key_s:
             self.change_to_status('naruto/idle')
     
@@ -158,7 +202,7 @@ class Controller():
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
             self.handle_key_event()
-
+            return True
             if self.insert_action_num == 0 and self.sleep(3000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
@@ -207,8 +251,13 @@ class Controller():
     def start(self):
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
             if self.sleep(1000):
-                self.naruto_style.change_to_status('色诱之术')
-                self.saske_style.change_to_status('开篇挥手')
+                #self.naruto_style.change_to_status('色诱之术')
+                #self.saske_style.change_to_status('开篇挥手')
+                
+                #手动添加一下，下面这些函数以后是要删除掉的
+                self.naruto_end_update_seyouzhishu()
+                self.saske_end_update_kai_pian_hui_shou()
+                
                 self.naruto_style.append_end_update_seyouzhishu(self.naruto_end_update_seyouzhishu)
                 self.saske_style.append_end_update_kai_pian_hui_shou(self.saske_end_update_kai_pian_hui_shou)
     
