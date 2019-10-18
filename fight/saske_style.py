@@ -64,7 +64,7 @@ class SaskeStyle(Style):
         
             #这个后仰的是一直存在于sprite_group里面的，所以以后你要切换人物，一定要把后仰删掉，而不是单单删除current_sprite
             self.character["saske/后仰"].set_image_update_bounce(False)
-            self.sprite_group.add(self.character["saske/后仰"])   #self.character["saske/后仰"].hidden = False  如果这个后仰设置为True则会一直卡在第一张图片
+            self.sprite_group.add(self.character["saske/后仰"])   #self.character["saske/后仰"].stop_flush = False  如果这个后仰设置为True则会一直卡在第一张图片
             self.character["saske/后仰"].set_top_padding(1000)
             self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
             self.character["saske/后仰"].set_frame_rate(8)
@@ -90,17 +90,9 @@ class SaskeStyle(Style):
             self.current_sprite = self.character["saske/写轮眼"]
             self.character["saske/写轮眼"].set_frame_rate(8)
             
-        self.current_sprite.hidden = False
+        self.current_sprite.stop_flush = False
         self.fall_down_interval = 0
     
-    def remove_current_sprite(self):
-        self.sprite_group.remove_internal(self.current_sprite)
-    
-    def set_left_padding(self, left_padding):
-        self.current_sprite.set_left_padding(left_padding)
-        
-    def set_top_padding(self, top_padding):
-        self.current_sprite.set_top_padding(top_padding)
     
     def change_to_houyang(self):
         if not self.status == '后仰':

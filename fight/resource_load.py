@@ -24,39 +24,39 @@ class Style():
     
     def change_to_status_common(self,status_name):
         self.sprite_group.remove_internal(self.current_sprite)
-        self.current_sprite.hidden = True
+        self.current_sprite.stop_flush = True
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
         self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
         self.current_sprite = self.character[status_name]
-        self.character[status_name].hidden = False
+        self.character[status_name].stop_flush = False
         
     def change_to_status(self, status_name):
         self.change_to_status_common(status_name)
         self.sprite_group.add(self.current_sprite)
     
     def change_to_status_with_no_remove_origin(self, status_name):
-        self.current_sprite.hidden = True
+        self.current_sprite.stop_flush = True
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
         self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
         self.current_sprite.set_top_padding(1000)
         self.current_sprite = self.character[status_name]
-        self.character[status_name].hidden = False
+        self.character[status_name].stop_flush = False
         self.sprite_group.add(self.current_sprite)
     
     def change_to_status_just_show(self, status_name): #已经添加到sprite_group中，只是改变现实状态
-        self.current_sprite.hidden = True
+        self.current_sprite.stop_flush = True
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
         self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
         #self.sprite_group.remove_internal(self.current_sprite)
         self.current_sprite.set_top_padding(1000)
         self.current_sprite = self.character[status_name]
-        self.current_sprite.hidden = False
+        self.current_sprite.stop_flush = False
     
     def set_current_sprite_hide(self):
-        self.current_sprite.hidden = True
+        self.current_sprite.stop_flush = True
     
     def set_current_sprite_show(self):
-        self.current_sprite.hidden = False
+        self.current_sprite.stop_flush = False
         
     def get_left_padding(self):
         return self.current_sprite.get_left_padding()
@@ -87,6 +87,12 @@ class Style():
         self.character[image_url] = character_sprite
         return character_sprite
     
+    def set_left_padding(self, left_padding):
+        self.current_sprite.set_left_padding(left_padding)
+    
+    def set_top_padding(self, top_padding):
+        self.current_sprite.set_top_padding(top_padding)
+        
 class GameCommonData():
     #窗体的宽高
     WIDTH = 1500
@@ -200,7 +206,7 @@ class CharacterSprite(pygame.sprite.Sprite):
         #self.image = self.multi_shadow_separation_images[0] #pygame.transform.scale(multi_shadow_separation_images[0], (50, 38))
         
         self.radius = 20
-        self.hidden = True
+        self.stop_flush = True
         self.hide_timer = GameCommonData.tick#pygame.time.get_ticks()
         self.image_index = 0
         self.flush_interval = 17
@@ -289,7 +295,7 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.iter = ints
     
     def update(self):
-        if self.hidden:
+        if self.stop_flush:
             return
         if not self.fixed_flush():
             return
@@ -300,7 +306,7 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.image = self.images[self.image_index]
         
         self.image_index = self.image_index + self.iter
-        if self.image_index == len(self.images) and not self.hidden:
+        if self.image_index == len(self.images) and not self.stop_flush:
             if self.bounce:
                 self.iter = -1
                 self.image_index = len(self.images) - 1
@@ -308,7 +314,7 @@ class CharacterSprite(pygame.sprite.Sprite):
                 self.image_index = 0
                 for func in self.end_update_function:
                     func()
-        if self.image_index == 0 and not self.hidden and self.bounce:
+        if self.image_index == 0 and not self.stop_flush and self.bounce:
             self.iter = 1
             for func in self.end_update_function:
                     func()

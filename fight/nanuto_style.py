@@ -102,8 +102,8 @@ class NarutoStyle(Style):
         if situation_flag == 1 or situation_flag == 2: 
             self.current_sprite = self.character["naruto/idle"]
             self.status = 'idle'
-            self.current_sprite.hidden = False
-            self.current_sprite.set_left_padding(60)
+            self.current_sprite.stop_flush = False
+            self.current_sprite.set_left_padding(60)    ##############################################################
             self.current_sprite.set_top_padding(GameCommonData.character_level)
             
             self.character["naruto/一个分身"].set_frame_rate(23)
@@ -113,7 +113,7 @@ class NarutoStyle(Style):
         elif situation_flag == 3:
             self.current_sprite = self.character["naruto/multi_shadow_separation"]
             self.status = 'multi_shadow_separation'
-            self.current_sprite.hidden = False
+            self.current_sprite.stop_flush = False
             self.character["naruto/multi_shadow_separation"].set_frame_rate(23)
             self.character["naruto/multi_shadow_separation"].append_end_update_function(self.remove_current_sprite_from_sprite_group)
         
@@ -152,11 +152,7 @@ class NarutoStyle(Style):
         elif image_index == 16:
             self.saske.change_to_status('后仰')
     
-    def set_left_padding(self, left_padding):
-        self.current_sprite.set_left_padding(left_padding)
-    
-    def set_top_padding(self, top_padding):
-        self.current_sprite.set_top_padding(top_padding)
+
     
     def change_to_status_for_fenshen(self, status):
         if status == 'idle':

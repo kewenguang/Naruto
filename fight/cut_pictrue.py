@@ -26,11 +26,16 @@ def change_pic_width():
 #change_pic_width()
 #sys.exit()
         
+input_dir = prefix_dir + '我爱罗/我爱罗_idle'
+output_dir = prefix_dir + '我爱罗/我爱罗_idle_change'
 def change_pic_height():
     for filename in os.listdir(input_dir):
         img = Image.open(input_dir + "/" + filename)
-        cropped = img.crop((0, 0, 170, 85)) 
+        cropped = img.crop((0, 0, img.size[0], 52)) 
         cropped.save(output_dir + "/" + filename)
+        
+#change_pic_height()
+#sys.exit()
         
 def change_pic_color():
     for filename in os.listdir(input_dir):
@@ -319,17 +324,19 @@ def cut_off_white_left_padding():
         index_padding = index_padding + 1
         img_temp.save(output_dir + "/" + filename)
 
-input_dir = prefix_dir + '佐助长大了/添加到白板的图'
-output_dir = prefix_dir + '佐助长大了/对称中心添加图片'
+input_dir = prefix_dir + '我爱罗/我爱罗_idle'
+output_dir = prefix_dir + '我爱罗/我爱罗_idle_change'
 def resize_pic():
     for filename in os.listdir(input_dir):
         img = Image.open(input_dir + "/" + filename)
-        out = img.resize((int(img.size[0]/3), int(img.size[1]/2)))
+        out = img.resize((int(img.size[0]*0.9), int(img.size[1]*0.9)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
 
 #resize_pic()
-input_dir = prefix_dir + '佐助长大了/写轮眼'
-output_dir = prefix_dir + '佐助长大了/写轮眼处理'
+#sys.exit()
+
+input_dir = prefix_dir + '我爱罗/我爱罗_idle'
+output_dir = prefix_dir + '我爱罗/我爱罗_idle_change'
 def change_to_transparent():
     color_set = set()
     for filename in os.listdir(input_dir):
@@ -339,14 +346,64 @@ def change_to_transparent():
                 data = img.getpixel((i, j))
                 if data[0] == 0 and data[1] == 0 and data[2] == 0 and data[3] == 0:
                     img.putpixel((i, j), (255,255,255,255))
-                if i == 35 and j == 17 and filename == '345.png':
-                    print(i,j,data[0], data[1], data[2], data[3])
-                if i == 1 and j == 1 and filename == '345.png':
-                    print(i,j,data[0], data[1], data[2], data[3])
+                #if i == 35 and j == 17 and filename == '345.png':
+                #    print(i,j,data[0], data[1], data[2], data[3])
+                #if i == 1 and j == 1 and filename == '345.png':
+                #    print(i,j,data[0], data[1], data[2], data[3])
                 #   print(i,j,data[0], data[1], data[2], data[3])
         img.save(output_dir + "/" + filename)
                 
     #for item in color_set:
     #    print(item)
         
-change_to_transparent()
+#change_to_transparent()
+#sys.exit()
+
+def only_change_pic_height():
+    img_one = Image.open(input_dir + "/233.png")
+    height = img_one.size[1]
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        img_copy = img.copy()
+        img = img.crop((0, 0, img.size[0], height))
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                img.putpixel((i, j), (255,255,255,255))
+        start_height = height - img_copy.size[1]
+        for i in range(img_copy.size[0]):
+            for j in range(img_copy.size[1]):
+                data = img_copy.getpixel((i, j))
+                img.putpixel((i, start_height + j), (data[0], data[1], data[2], data[3]))
+        img.save(output_dir + "/" + filename)
+#only_change_pic_height()
+
+def add_pic_to_max_width_and_max_height():
+    max_width = 0
+    max_height = 0
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        if img.size[0] > max_width:
+            max_width = img.size[0]
+        if img.size[1] > max_height:
+            max_height = img.size[1]
+    
+    img_white = Image.open(input_dir + "/300.png")
+    img_white = img_white.crop((0, 0, max_width, max_height))
+    for i in range(img_white.size[0]):
+        for j in range(img_white.size[1]):
+            img_white.putpixel((i, j), (255, 255, 255, 255))
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        img_white_copy = img_white.copy()
+        start_left = int(img_white_copy.size[0]/2) - int(img.size[0]/2)
+        start_top = img_white_copy.size[1] - img.size[1]
+        left_top_data = img.getpixel((0, 0))
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if left_top_data[0] == data[0] and left_top_data[1] == data[1] and left_top_data[2] == data[2] and left_top_data[3] == data[3]: 
+                    continue
+                img_white_copy.putpixel((start_left + i, start_top + j), (data[0], data[1], data[2], data[3]))
+        img_white_copy.save(output_dir + "/" + filename)
+        
+add_pic_to_max_width_and_max_height()

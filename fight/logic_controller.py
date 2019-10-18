@@ -7,6 +7,8 @@ import time
 
 from fight.nanuto_style import NarutoStyle
 from fight.saske_style import SaskeStyle
+from fight.woailuo_style import WoailuoStyle
+from fight.kakaxi_style import KakaxiStyle
 from fight import saske_style
 
 class Controller():
@@ -105,7 +107,7 @@ class Controller():
     def xuzuo_jian_update(self, image_index):
         left_padding = self.saske_xuzuo_jian.character['saske/须左的箭'].get_left_padding()
         if left_padding - self.naruto_style.get_left_padding() < 30:
-            self.saske_xuzuo_jian.remove_current_sprite()
+            self.saske_xuzuo_jian.remove_current_sprite_from_sprite_group()
             self.naruto_style.change_to_status('death')
             self.saske_xuzuo.character['saske/须左'].clear_update_function()
             #self.saske_xuzuo_jian.character['saske/须左的箭'].image_index = 14
@@ -122,12 +124,12 @@ class Controller():
             self.saske_xuzuo.character['saske/须左'].image_index = 13
             
     def xu_zuo(self):
-        self.saske_xielunyan.remove_current_sprite()
+        self.saske_xielunyan.remove_current_sprite_from_sprite_group()
         self.saske_xuzuo = SaskeStyle(self.sprite_group, situation_flag = 2)
         self.saske_xuzuo.set_left_padding(self.saske_style.get_left_padding())
         self.saske_xuzuo.set_top_padding(self.saske_style.get_top_padding() + 20)
         self.saske_xuzuo.character['saske/须左'].append_update_function(self.xuzuo_update)
-        self.saske_xuzuo.character['saske/须左'].append_end_update_function(self.saske_xuzuo.remove_current_sprite)
+        self.saske_xuzuo.character['saske/须左'].append_end_update_function(self.saske_xuzuo.remove_current_sprite_from_sprite_group)
         
     def xie_lun_yan(self):
         self.saske_xielunyan = SaskeStyle(self.sprite_group, situation_flag = 4)
@@ -140,20 +142,116 @@ class Controller():
     #我爱罗特效##############################################################################################
     def songzang(self):
         print('送葬')
+    
+    def wo_ai_luo_to_idle(self):
+        self.wo_ai_luo.change_to_status('idle')
         
     def add_wo_ai_luo(self):
-        print('我爱罗')
+        self.wo_ai_luo = WoailuoStyle(self.sprite_group)
+        self.wo_ai_luo.set_left_padding(self.saske_style.get_left_padding() - 600)
+        self.wo_ai_luo.change_to_status('出现')
+        self.wo_ai_luo.character['woailuo/出现'].append_end_update_function(self.wo_ai_luo_to_idle)
+        
+    def end_sa_pu(self):
+        self.wo_ai_luo_to_idle()
+        self.wo_ai_luo_sa_pu.remove_current_sprite_from_sprite_group()
+        
+    def sa_pu_update(self, image_index):
+        if image_index == 8 :
+            self.saske_style.change_to_houyang()
+        if image_index == 11 :
+            self.saske_style.change_to_houyang()
+    
+    def sa_pu(self):
+        self.wo_ai_luo.character['woailuo/蹲下'].stop_flush = True
+        self.wo_ai_luo_sa_pu = WoailuoStyle(self.sprite_group, situation_flag = 2)
+        self.wo_ai_luo_sa_pu.set_left_padding(self.saske_style.get_left_padding() - 150)
+        self.wo_ai_luo_sa_pu.character['woailuo/沙瀑送葬'].append_end_update_function(self.end_sa_pu)
+        self.wo_ai_luo_sa_pu.character['woailuo/沙瀑送葬'].append_update_function(self.sa_pu_update)
+        
+    def sa_pu_song_zang(self):
+        self.wo_ai_luo.change_to_status('蹲下')
+        self.wo_ai_luo.character['woailuo/蹲下'].append_end_update_function(self.sa_pu)
+        
+    def sa_fu_jiu_update(self, image_index):
+        if image_index == 11:
+            self.saske_style.remove_current_sprite_from_sprite_group()
+        if image_index == 14:
+            self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].image_index = image_index - 1
+
+    def end_update_wo_quan(self):
+        #if self.wo_ai_luo.character['woailuo/举手握拳'].image_index == 0:
+        self.wo_ai_luo.character['woailuo/举手握拳'].image_index = len(self.wo_ai_luo.character['woailuo/举手握拳'].images) - 1
+        
+    def remove_safujiu(self):
+        self.wo_ai_luo_sa_fu_jiu.remove_current_sprite_from_sprite_group()
+        self.wo_ai_luo.change_to_status('idle')
+        
+    def sa_fu_jiu(self):
+        self.wo_ai_luo.change_to_status('举手握拳')
+        self.wo_ai_luo.character['woailuo/举手握拳'].append_end_update_function(self.end_update_wo_quan)
+        self.wo_ai_luo_sa_fu_jiu = WoailuoStyle(self.sprite_group, situation_flag = 3)
+        self.wo_ai_luo_sa_fu_jiu.set_left_padding(self.saske_style.get_left_padding() + 10)
+        self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].append_update_function(self.sa_fu_jiu_update)
+        self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].append_end_update_function(self.remove_safujiu)
     #我爱罗特效##############################################################################################
+    
+    
+    #卡卡西特效##############################################################################################
+    
+    def ka_ka_xi_to_idle(self):
+        self.ka_ka_xi.change_to_status('idle')
+        
+    def add_ka_ka_xi(self):
+        self.saske_style.remove_current_sprite_from_sprite_group()
+        self.ka_ka_xi = KakaxiStyle(self.sprite_group)
+        self.ka_ka_xi.set_left_padding(self.saske_style.get_left_padding())
+        self.ka_ka_xi.change_to_status('出现')
+        self.ka_ka_xi.character['kakaxi/出现'].append_end_update_function(self.ka_ka_xi_to_idle)
+    
+    def shui_long_dan_zhi_shu_update_function(self, image_index):
+        left_padding = self.ka_ka_xi_shui_long_dan_zhi_shu.get_left_padding()
+        self.ka_ka_xi_shui_long_dan_zhi_shu.set_left_padding(left_padding - 20) #12 20
+        if image_index == 20:
+            self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 12
+        if left_padding == 300: #这个数值在最后联调的时候需要改动-----------------------------------------
+            self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 21
+    
+    def release_shui_long_dan_zhi_shu(self):
+        self.ka_ka_xi_shui_long_dan_zhi_shu = KakaxiStyle(self.sprite_group, situation_flag = 5)
+        self.ka_ka_xi_shui_long_dan_zhi_shu.set_left_padding(self.saske_style.get_left_padding() + 80)
+        self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_update_function(self.shui_long_dan_zhi_shu_update_function)
+        self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_end_update_function(self.ka_ka_xi_to_idle)
+        self.ka_ka_xi.character['kakaxi/站直'].clear_end_update_function_by_index(0)
+    
+    #首先  龙的高度太高了，要放下来一些
+    #另外  龙打过去的话，是要放特效的，那个特效要加上
+    
+    def end_update_zhan_zhi(self):
+        #if self.wo_ai_luo.character['woailuo/举手握拳'].image_index == 0:
+        self.ka_ka_xi.character['kakaxi/站直'].image_index = len(self.ka_ka_xi.character['kakaxi/站直'].images) - 1
+    
+    def shui_long_dan_zhi_shu(self):
+        self.ka_ka_xi.change_to_status('站直')
+        self.ka_ka_xi.character['kakaxi/站直'].append_end_update_function(self.release_shui_long_dan_zhi_shu)
+        self.ka_ka_xi.character['kakaxi/站直'].append_end_update_function(self.end_update_zhan_zhi)
+    #神威的特效暂时定为卡卡西通过神威隐身，然后我爱罗被四面八方的手里剑转一圈受伤，最后卡卡西出现在原来的地方
+    #卡卡西特效##############################################################################################
     
     def handle_key_event(self):
         if self.key_controller.key_m:
             self.chu_fa_fen_shen()
         elif self.key_controller.key_w:
-            self.xie_lun_yan()
+            #self.xie_lun_yan()
+            #self.sa_pu_song_zang()
+            #self.sa_fu_jiu()
+            self.shui_long_dan_zhi_shu()
         elif self.key_controller.key_a:
-            self.add_wo_ai_luo()
+            #self.add_wo_ai_luo()
+            self.add_ka_ka_xi()
         elif self.key_controller.key_s:
-            self.change_to_status('naruto/idle')
+            #self.change_to_status('naruto/idle')
+            self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].clear_update_function()
     
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
