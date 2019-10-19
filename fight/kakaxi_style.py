@@ -12,7 +12,7 @@ class KakaxiStyle(Style):
         self.sprite_group = sprite_group
         self.character = {}
         if situation_flag == 1:
-            kakaxi_image_url = ['kakaxi/idle', 'kakaxi/站直', 'kakaxi/出现']
+            kakaxi_image_url = ['kakaxi/idle', 'kakaxi/站直', 'kakaxi/出现', 'kakaxi/捂眼']
             for i in range(len(kakaxi_image_url)):
                 print('kakaxi_image_url[i]:' + kakaxi_image_url[i])
                 self.add_sprite(kakaxi_image_url[i], need_flip = True)
@@ -47,7 +47,7 @@ class KakaxiStyle(Style):
         elif situation_flag == 4:
             self.sprite_group.add(self.character["kakaxi/水龙弹打中特效"])
             self.current_sprite = self.character["kakaxi/水龙弹打中特效"]
-            self.character["kakaxi/手里剑"].set_frame_rate(5)
+            self.character["kakaxi/水龙弹打中特效"].set_frame_rate(5)
         elif situation_flag == 5:
             self.sprite_group.add(self.character["kakaxi/水龙弹之术"])
             self.current_sprite = self.character["kakaxi/水龙弹之术"]
@@ -55,6 +55,9 @@ class KakaxiStyle(Style):
             
         self.current_sprite.set_top_padding(GameCommonData.character_level)
         self.current_sprite.stop_flush = False
+        
+    def revert_top_padding(self):
+        self.current_sprite.set_top_padding(GameCommonData.character_level)
         
     def change_to_status(self, status):
         if status == '站直':
@@ -66,3 +69,6 @@ class KakaxiStyle(Style):
         elif status == '出现':
             Style.change_to_status(self, 'kakaxi/出现')
             self.status = '出现'
+        elif status == '捂眼':
+            Style.change_to_status(self, 'kakaxi/捂眼')
+            self.status = '捂眼'

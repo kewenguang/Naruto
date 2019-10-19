@@ -209,23 +209,36 @@ class Controller():
         self.ka_ka_xi.change_to_status('出现')
         self.ka_ka_xi.character['kakaxi/出现'].append_end_update_function(self.ka_ka_xi_to_idle)
     
+    def end_update_shui_dun_te_xiao(self):
+        self.ka_ka_xi_shui_dun_te_xiao.remove_current_sprite_from_sprite_group()
+    
     def shui_long_dan_zhi_shu_update_function(self, image_index):
         left_padding = self.ka_ka_xi_shui_long_dan_zhi_shu.get_left_padding()
         self.ka_ka_xi_shui_long_dan_zhi_shu.set_left_padding(left_padding - 20) #12 20
         if image_index == 20:
             self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 12
+        elif image_index == 21:
+            self.ka_ka_xi_shui_dun_te_xiao = KakaxiStyle(self.sprite_group, situation_flag = 4)
+            self.ka_ka_xi_shui_dun_te_xiao.set_left_padding(150)
+            self.ka_ka_xi_shui_dun_te_xiao.set_top_padding(self.ka_ka_xi.get_top_padding() + 10)
+            self.ka_ka_xi_shui_dun_te_xiao.character['kakaxi/水龙弹打中特效'].append_end_update_function(self.end_update_shui_dun_te_xiao)
+        elif image_index > 21 and image_index < 27:
+            self.ka_ka_xi_shui_dun_te_xiao.character['kakaxi/水龙弹打中特效'].image_index = 0
+            
         if left_padding == 300: #这个数值在最后联调的时候需要改动-----------------------------------------
-            self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 21
+            self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 20
+    
+    def remove_shui_long_dan_zhi_shu(self):
+        self.ka_ka_xi_shui_long_dan_zhi_shu.remove_current_sprite_from_sprite_group()
     
     def release_shui_long_dan_zhi_shu(self):
         self.ka_ka_xi_shui_long_dan_zhi_shu = KakaxiStyle(self.sprite_group, situation_flag = 5)
         self.ka_ka_xi_shui_long_dan_zhi_shu.set_left_padding(self.saske_style.get_left_padding() + 80)
+        self.ka_ka_xi_shui_long_dan_zhi_shu.set_top_padding(self.ka_ka_xi.get_top_padding() + 40)
         self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_update_function(self.shui_long_dan_zhi_shu_update_function)
         self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_end_update_function(self.ka_ka_xi_to_idle)
+        self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_end_update_function(self.remove_shui_long_dan_zhi_shu)
         self.ka_ka_xi.character['kakaxi/站直'].clear_end_update_function_by_index(0)
-    
-    #首先  龙的高度太高了，要放下来一些
-    #另外  龙打过去的话，是要放特效的，那个特效要加上
     
     def end_update_zhan_zhi(self):
         #if self.wo_ai_luo.character['woailuo/举手握拳'].image_index == 0:
@@ -235,6 +248,20 @@ class Controller():
         self.ka_ka_xi.change_to_status('站直')
         self.ka_ka_xi.character['kakaxi/站直'].append_end_update_function(self.release_shui_long_dan_zhi_shu)
         self.ka_ka_xi.character['kakaxi/站直'].append_end_update_function(self.end_update_zhan_zhi)
+        
+    def end_update_shen_wei(self):
+        self.ka_ka_xi_shen_wei.remove_current_sprite_from_sprite_group()
+        self.ka_ka_xi.set_top_padding(1000)
+        self.ka_ka_xi_shou_li_jian = KakaxiStyle(self.sprite_group, situation_flag = 3)
+        self.ka_ka_xi_shou_li_jian.set_left_padding(600)
+        self.ka_ka_xi_shou_li_jian.set_top_padding(400)
+        
+    def shen_wei(self):
+        self.ka_ka_xi.change_to_status('捂眼')
+        self.ka_ka_xi_shen_wei = KakaxiStyle(self.sprite_group, situation_flag = 2)
+        self.ka_ka_xi_shen_wei.set_left_padding(self.ka_ka_xi.get_left_padding())
+        self.ka_ka_xi_shen_wei.set_top_padding(self.ka_ka_xi.get_top_padding())
+        self.ka_ka_xi_shen_wei.character['kakaxi/神威'].append_end_update_function(self.end_update_shen_wei)
     #神威的特效暂时定为卡卡西通过神威隐身，然后我爱罗被四面八方的手里剑转一圈受伤，最后卡卡西出现在原来的地方
     #卡卡西特效##############################################################################################
     
@@ -245,7 +272,8 @@ class Controller():
             #self.xie_lun_yan()
             #self.sa_pu_song_zang()
             #self.sa_fu_jiu()
-            self.shui_long_dan_zhi_shu()
+            #self.shui_long_dan_zhi_shu()
+            self.shen_wei()
         elif self.key_controller.key_a:
             #self.add_wo_ai_luo()
             self.add_ka_ka_xi()

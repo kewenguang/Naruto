@@ -356,8 +356,8 @@ def change_to_transparent():
     #for item in color_set:
     #    print(item)
         
-#change_to_transparent()
-#sys.exit()
+change_to_transparent()
+sys.exit()
 
 def only_change_pic_height():
     img_one = Image.open(input_dir + "/233.png")
