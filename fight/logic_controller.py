@@ -249,19 +249,53 @@ class Controller():
         self.ka_ka_xi.character['kakaxi/站直'].append_end_update_function(self.release_shui_long_dan_zhi_shu)
         self.ka_ka_xi.character['kakaxi/站直'].append_end_update_function(self.end_update_zhan_zhi)
         
+    def generate_shou_li_jian(self, left_padding, top_padding):
+        self.ka_ka_xi_shou_li_jian = KakaxiStyle(self.sprite_group, situation_flag = 3)
+        self.ka_ka_xi_shou_li_jian.set_left_padding(left_padding)
+        self.ka_ka_xi_shou_li_jian.set_top_padding(top_padding)  #手里剑飞到600 400的地方
+        self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].append_update_function(self.shou_li_jian_fly)
+        
+    def end_update_shen_wei_reverse(self):
+        self.ka_ka_xi_shen_wei_reverse.remove_current_sprite_from_sprite_group()
+        self.ka_ka_xi.revert_top_padding()
+        self.ka_ka_xi.change_to_status('idle')
+    
+    def shou_li_jian_fly(self, image_index):
+        if image_index == 0:
+            self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].image_index = 1
+        #20 15
+        left_padding = self.ka_ka_xi_shou_li_jian.get_left_padding() - 12
+        top_padding = self.ka_ka_xi_shou_li_jian.get_top_padding() + 9
+        self.ka_ka_xi_shou_li_jian.set_left_padding(left_padding)
+        self.ka_ka_xi_shou_li_jian.set_top_padding(top_padding)
+        if left_padding < 600:
+            self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].clear_update_function()
+            #这里本来要插入打中人的特效什么的，被打中的人要后仰-----------------------------------------------
+            self.ka_ka_xi_shou_li_jian.remove_current_sprite_from_sprite_group()
+            self.shou_li_jian_num = self.shou_li_jian_num - 1
+            if self.shou_li_jian_num == 0:
+                #倒序的神威
+                self.ka_ka_xi_shen_wei_reverse = KakaxiStyle(self.sprite_group, situation_flag = 6)
+                self.ka_ka_xi_shen_wei_reverse.set_left_padding(self.ka_ka_xi.get_left_padding())
+                self.ka_ka_xi_shen_wei_reverse.set_top_padding(self.ka_ka_xi.get_reverse_top_padding() + 20)
+                self.ka_ka_xi_shen_wei_reverse.character['kakaxi/神威倒序'].append_end_update_function(self.end_update_shen_wei_reverse)
+            else:
+                #这里的手里剑位置变更后面再调
+                self.generate_shou_li_jian(800 + self.shou_li_jian_num * 48, 250 + self.shou_li_jian_num * 36)
+                 
     def end_update_shen_wei(self):
+        self.shou_li_jian_num = 4
         self.ka_ka_xi_shen_wei.remove_current_sprite_from_sprite_group()
         self.ka_ka_xi.set_top_padding(1000)
-        self.ka_ka_xi_shou_li_jian = KakaxiStyle(self.sprite_group, situation_flag = 3)
-        self.ka_ka_xi_shou_li_jian.set_left_padding(600)
-        self.ka_ka_xi_shou_li_jian.set_top_padding(400)
+        self.generate_shou_li_jian(800, 250)
         
     def shen_wei(self):
         self.ka_ka_xi.change_to_status('捂眼')
         self.ka_ka_xi_shen_wei = KakaxiStyle(self.sprite_group, situation_flag = 2)
         self.ka_ka_xi_shen_wei.set_left_padding(self.ka_ka_xi.get_left_padding())
-        self.ka_ka_xi_shen_wei.set_top_padding(self.ka_ka_xi.get_top_padding())
+        self.ka_ka_xi_shen_wei.set_top_padding(self.ka_ka_xi.get_top_padding() + 20)
         self.ka_ka_xi_shen_wei.character['kakaxi/神威'].append_end_update_function(self.end_update_shen_wei)
+    #调整神威的位置，调整手里剑的位置以及图片大小一致
     #神威的特效暂时定为卡卡西通过神威隐身，然后我爱罗被四面八方的手里剑转一圈受伤，最后卡卡西出现在原来的地方
     #卡卡西特效##############################################################################################
     

@@ -28,6 +28,9 @@ class KakaxiStyle(Style):
         elif situation_flag == 5:
             kakaxi_image_url = ['kakaxi/水龙弹之术']
             self.add_sprite(kakaxi_image_url[0], need_flip = True)
+        elif situation_flag == 6:
+            kakaxi_image_url = ['kakaxi/神威倒序']
+            self.add_sprite(kakaxi_image_url[0])
             
         if situation_flag == 1:
             self.character["kakaxi/idle"].set_frame_rate(8)
@@ -43,7 +46,7 @@ class KakaxiStyle(Style):
         elif situation_flag == 3:
             self.sprite_group.add(self.character["kakaxi/手里剑"])
             self.current_sprite = self.character["kakaxi/手里剑"]
-            self.character["kakaxi/手里剑"].set_frame_rate(10)
+            self.character["kakaxi/手里剑"].set_frame_rate(20)
         elif situation_flag == 4:
             self.sprite_group.add(self.character["kakaxi/水龙弹打中特效"])
             self.current_sprite = self.character["kakaxi/水龙弹打中特效"]
@@ -52,12 +55,19 @@ class KakaxiStyle(Style):
             self.sprite_group.add(self.character["kakaxi/水龙弹之术"])
             self.current_sprite = self.character["kakaxi/水龙弹之术"]
             self.character["kakaxi/水龙弹之术"].set_frame_rate(20)
+        elif situation_flag == 6:
+            self.sprite_group.add(self.character["kakaxi/神威倒序"])
+            self.current_sprite = self.character["kakaxi/神威倒序"]
+            self.character["kakaxi/神威倒序"].set_frame_rate(5)
             
         self.current_sprite.set_top_padding(GameCommonData.character_level)
         self.current_sprite.stop_flush = False
         
     def revert_top_padding(self):
         self.current_sprite.set_top_padding(GameCommonData.character_level)
+        
+    def get_reverse_top_padding(self):
+        return GameCommonData.character_level
         
     def change_to_status(self, status):
         if status == '站直':

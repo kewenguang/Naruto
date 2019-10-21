@@ -332,6 +332,45 @@ def resize_pic():
         out = img.resize((int(img.size[0]*0.9), int(img.size[1]*0.9)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
 
+def resize_one_pic_in_center():
+    img = Image.open(input_dir + "/70.png")
+    out = img.resize((int(img.size[0]*0.6), int(img.size[1]*0.6)), Image.ANTIALIAS)
+    
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            img.putpixel((i, j), (255,255,255,255))
+    
+    start_left = int(img.size[0]/2) - int(out.size[0]/2)
+    start_top = int(img.size[1]/2) - int(out.size[1]/2)
+    for i in range(out.size[0]):
+        for j in range(out.size[1]):
+            data = out.getpixel((i, j))
+            img.putpixel((start_left + i, start_top + j), (data[0], data[1], data[2], data[3]))
+    
+    img.save(output_dir + "/70.png")
+
+#resize_one_pic_in_center()
+
+def one_center_change_to_another_center():
+    one_image = Image.open(input_dir + "/70.png")
+    another_image = Image.open(input_dir + "/214.png")
+    
+    for i in range(another_image.size[0]):
+        for j in range(another_image.size[1]):
+            another_image.putpixel((i, j), (255,255,255,255))
+            
+    start_left = int(one_image.size[0]/2) - int(another_image.size[0]/2)
+    start_top = int(one_image.size[1]/2) - int(another_image.size[1]/2)
+    
+    for i in range(another_image.size[0]):
+        for j in range(another_image.size[1]):
+            data = one_image.getpixel((start_left + i, start_top + j))
+            another_image.putpixel((i, j), (data[0], data[1], data[2], data[3]))
+    another_image.putpixel((0, 0), (255, 255, 255, 255))
+    another_image.save(output_dir + "/70.png")
+    
+one_center_change_to_another_center()
+sys.exit()
 #resize_pic()
 #sys.exit()
 
@@ -356,8 +395,8 @@ def change_to_transparent():
     #for item in color_set:
     #    print(item)
         
-change_to_transparent()
-sys.exit()
+#change_to_transparent()
+#sys.exit()
 
 def only_change_pic_height():
     img_one = Image.open(input_dir + "/233.png")
