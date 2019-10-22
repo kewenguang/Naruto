@@ -369,9 +369,30 @@ def one_center_change_to_another_center():
     another_image.putpixel((0, 0), (255, 255, 255, 255))
     another_image.save(output_dir + "/70.png")
     
-one_center_change_to_another_center()
-sys.exit()
+#one_center_change_to_another_center()
+#sys.exit()
 #resize_pic()
+#sys.exit()
+
+def resize_one_pic_to_another_pic_size():
+    one_image = Image.open(input_dir + '/1.png')
+    another_image = Image.open(input_dir + '/210.png')
+    out = one_image.resize(((another_image.size[0]), (another_image.size[1])), Image.ANTIALIAS)
+    out.save(output_dir + '/1.png')
+
+now_dir_pic = prefix_dir + '自来也/现在的自来也/235.png'
+pics_dir = prefix_dir + '自来也/下蹲通灵'
+output_dir = prefix_dir + '自来也/缩小的下蹲通灵'
+def resize_pics_to_another_pic():
+    one_image = Image.open(now_dir_pic)
+    for filename in os.listdir(pics_dir):
+        img = Image.open(pics_dir + "/" + filename)
+        img = img.resize(((one_image.size[0]), (one_image.size[1])), Image.ANTIALIAS)
+        img.save(output_dir + '/' + filename)
+#resize_pics_to_another_pic()
+#sys.exit()
+
+#resize_one_pic_to_another_pic_size()
 #sys.exit()
 
 input_dir = prefix_dir + '我爱罗/我爱罗_idle'
@@ -394,9 +415,25 @@ def change_to_transparent():
                 
     #for item in color_set:
     #    print(item)
-        
+
 #change_to_transparent()
 #sys.exit()
+def add_yun_duo_to_another_pic():
+    zilaiye_url = prefix_dir + '我爱罗/自来也/1.png'
+    zilaiye_img = Image.open(zilaiye_url)
+    for filename in os.listdir(input_dir):
+        img_yun_duo = Image.open(input_dir + "/" + filename)
+        zilaiye_copy = zilaiye_img.copy()
+        data_top_left = img_yun_duo.getpixel((0, 0))
+        for i in range(img_yun_duo.size[0]):
+            for j in range(img_yun_duo.size[1]):
+                data = img_yun_duo.getpixel((i, j))
+                if data[0] == data_top_left[0] and data[1] == data_top_left[1] and data[2] == data_top_left[2] and data[3] == data_top_left[3]:
+                    continue
+                zilaiye_copy.putpixel((i, j), (data[0], data[1], data[2], data[3]))
+        zilaiye_copy.save(output_dir + "/" + filename)        
+
+add_yun_duo_to_another_pic()
 
 def only_change_pic_height():
     img_one = Image.open(input_dir + "/233.png")
@@ -416,7 +453,7 @@ def only_change_pic_height():
         img.save(output_dir + "/" + filename)
 #only_change_pic_height()
 
-def add_pic_to_max_width_and_max_height():
+def find_dir_max_width_and_height(input_dir):
     max_width = 0
     max_height = 0
     for filename in os.listdir(input_dir):
@@ -425,6 +462,10 @@ def add_pic_to_max_width_and_max_height():
             max_width = img.size[0]
         if img.size[1] > max_height:
             max_height = img.size[1]
+    return max_width, max_height
+
+def add_pic_to_max_width_and_max_height():
+    max_width, max_height = find_dir_max_width_and_height(input_dir)
     
     img_white = Image.open(input_dir + "/300.png")
     img_white = img_white.crop((0, 0, max_width, max_height))
@@ -445,4 +486,88 @@ def add_pic_to_max_width_and_max_height():
                 img_white_copy.putpixel((start_left + i, start_top + j), (data[0], data[1], data[2], data[3]))
         img_white_copy.save(output_dir + "/" + filename)
         
-add_pic_to_max_width_and_max_height()
+hama = prefix_dir + '自来也/蛤蟆/219.png'
+hama_yun_dir = prefix_dir + '自来也/蛤蟆的云'
+hama_tong_ling_dir = prefix_dir + '自来也/蛤蟆通灵'
+def add_hama_to_yun():
+    max_width, max_height = find_dir_max_width_and_height(hama_yun_dir)
+    hama_img = Image.open(hama)
+    if max_width < hama_img.size[0]:
+        max_width = hama_img.size[0]
+    if max_height < hama_img.size[1]:
+        max_height = hama_img.size[1]
+    
+    white_img = hama_img.copy()
+    
+    white_img = white_img.crop((0, 0, max_width, max_height))
+    
+    for i in range(white_img.size[0]):
+        for j in range(white_img.size[1]):
+            white_img.putpixel((i, j), (255, 255, 255, 255))
+    
+    
+    for filename in os.listdir(hama_yun_dir):
+        img = Image.open(hama_yun_dir + '/' + filename)
+        
+        white_img_copy = white_img.copy()
+        
+        #先加上蛤蟆
+        start_left = int(white_img.size[0]/2) - int(hama_img.size[0]/2)
+        start_top = white_img.size[1] - hama_img.size[1]
+        left_top_data = hama_img.getpixel((0,0))
+        for i in range(hama_img.size[0]):
+            for j in range(hama_img.size[1]):
+                data = hama_img.getpixel((i, j))
+                if left_top_data[0] == data[0] and left_top_data[1] == data[1] and left_top_data[2] == data[2] and left_top_data[3] == data[3]: 
+                    continue
+                white_img_copy.putpixel((i+start_left, j + start_top), (data[0], data[1], data[2], data[3]))
+        
+        
+        start_left = int(white_img.size[0]/2) - int(img.size[0]/2)
+        start_top = white_img.size[1] - img.size[1]
+        left_top_data = img.getpixel((0,0))
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if left_top_data[0] == data[0] and left_top_data[1] == data[1] and left_top_data[2] == data[2] and left_top_data[3] == data[3]: 
+                    continue
+                white_img_copy.putpixel((i+start_left, j + start_top), (data[0], data[1], data[2], data[3]))
+                
+        white_img_copy.save(hama_tong_ling_dir + '/' + filename)
+        
+        
+        start_left = int(white_img.size[0]/2) - int(hama_img.size[0]/2)
+        start_top = white_img.size[1] - hama_img.size[1]
+        left_top_data = hama_img.getpixel((0,0))
+        for i in range(hama_img.size[0]):
+            for j in range(hama_img.size[1]):
+                data = hama_img.getpixel((i, j))
+                if left_top_data[0] == data[0] and left_top_data[1] == data[1] and left_top_data[2] == data[2] and left_top_data[3] == data[3]: 
+                    continue
+                white_img.putpixel((i+start_left, j + start_top), (data[0], data[1], data[2], data[3]))
+        white_img.save(hama_tong_ling_dir + '/228.png')
+        
+input_file = prefix_dir + '自来也/现在的蛤蟆/228.png'
+input_dir = prefix_dir + '自来也/蛤蟆喷火'
+output_dir = prefix_dir + '自来也/蛤蟆喷火处理过'
+def resize_hama_penhuo():
+    hama_img = Image.open(input_file)
+    for i in range(hama_img.size[0]):
+        for j in range(hama_img.size[1]):
+            hama_img.putpixel((i, j),(255, 255, 255, 255)) 
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + '/' + filename)
+        start_left = int(hama_img.size[0]/2) - int(img.size[0]/2)
+        start_top = hama_img.size[1] - img.size[1]
+        hama_img_copy = hama_img.copy()
+        left_top_data = img.getpixel((0,0))
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if left_top_data[0] == data[0] and left_top_data[1] == data[1] and left_top_data[2] == data[2] and left_top_data[3] == data[3]: 
+                    continue
+                hama_img_copy.putpixel((i+start_left, j + start_top), (data[0], data[1], data[2], data[3]))
+        hama_img_copy.save(output_dir + '/' + filename)
+resize_hama_penhuo()
+#add_hama_to_yun()
+#add_pic_to_max_width_and_max_height()

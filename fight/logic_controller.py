@@ -295,9 +295,16 @@ class Controller():
         self.ka_ka_xi_shen_wei.set_left_padding(self.ka_ka_xi.get_left_padding())
         self.ka_ka_xi_shen_wei.set_top_padding(self.ka_ka_xi.get_top_padding() + 20)
         self.ka_ka_xi_shen_wei.character['kakaxi/神威'].append_end_update_function(self.end_update_shen_wei)
-    #调整神威的位置，调整手里剑的位置以及图片大小一致
     #神威的特效暂时定为卡卡西通过神威隐身，然后我爱罗被四面八方的手里剑转一圈受伤，最后卡卡西出现在原来的地方
     #卡卡西特效##############################################################################################
+    
+    
+    #自来也特效##############################################################################################
+    
+    def add_zi_lai_ye(self):
+        print()
+    
+    #自来也特效##############################################################################################
     
     def handle_key_event(self):
         if self.key_controller.key_m:
