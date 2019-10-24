@@ -52,10 +52,16 @@ class Style():
         self.current_sprite = self.character[status_name]
         self.current_sprite.stop_flush = False
     
-    def set_current_sprite_hide(self):
+    def revert_top_padding(self):
+        self.current_sprite.set_top_padding(GameCommonData.character_level)
+        
+    def get_reverse_top_padding(self):
+        return GameCommonData.character_level
+    
+    def set_current_sprite_stop_flush(self):
         self.current_sprite.stop_flush = True
     
-    def set_current_sprite_show(self):
+    def set_current_sprite_start_flush(self):
         self.current_sprite.stop_flush = False
         
     def get_left_padding(self):

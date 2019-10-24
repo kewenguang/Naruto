@@ -464,10 +464,15 @@ def find_dir_max_width_and_height(input_dir):
             max_height = img.size[1]
     return max_width, max_height
 
+input_dir = prefix_dir + '自来也/喷火'
+output_dir = prefix_dir + '自来也/喷火处理'
 def add_pic_to_max_width_and_max_height():
     max_width, max_height = find_dir_max_width_and_height(input_dir)
     
-    img_white = Image.open(input_dir + "/300.png")
+    img_white = Image.open(input_dir + "/233.png")
+    for i in range(img_white.size[0]):
+        for j in range(img_white.size[1]):
+            img_white.putpixel((i, j), (255, 255, 255, 255))
     img_white = img_white.crop((0, 0, max_width, max_height))
     for i in range(img_white.size[0]):
         for j in range(img_white.size[1]):
@@ -477,7 +482,7 @@ def add_pic_to_max_width_and_max_height():
         img_white_copy = img_white.copy()
         start_left = int(img_white_copy.size[0]/2) - int(img.size[0]/2)
         start_top = img_white_copy.size[1] - img.size[1]
-        left_top_data = img.getpixel((0, 0))
+        left_top_data = img.getpixel((0, 10))
         for i in range(img.size[0]):
             for j in range(img.size[1]):
                 data = img.getpixel((i, j))
@@ -486,6 +491,9 @@ def add_pic_to_max_width_and_max_height():
                 img_white_copy.putpixel((start_left + i, start_top + j), (data[0], data[1], data[2], data[3]))
         img_white_copy.save(output_dir + "/" + filename)
         
+#add_pic_to_max_width_and_max_height()
+#sys.exit()
+
 hama = prefix_dir + '自来也/蛤蟆/219.png'
 hama_yun_dir = prefix_dir + '自来也/蛤蟆的云'
 hama_tong_ling_dir = prefix_dir + '自来也/蛤蟆通灵'
@@ -568,6 +576,15 @@ def resize_hama_penhuo():
                     continue
                 hama_img_copy.putpixel((i+start_left, j + start_top), (data[0], data[1], data[2], data[3]))
         hama_img_copy.save(output_dir + '/' + filename)
-resize_hama_penhuo()
+
+input_dir = prefix_dir + '自来也/长条火焰'
+output_dir = prefix_dir + '自来也/旋转后的长条火焰'
+def rotate_image():
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + '/' + filename)
+        out = img.transpose(Image.ROTATE_180)
+        out.save(output_dir + '/' + filename)
+rotate_image()
+#resize_hama_penhuo()
 #add_hama_to_yun()
 #add_pic_to_max_width_and_max_height()

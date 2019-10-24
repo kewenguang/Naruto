@@ -9,6 +9,7 @@ from fight.nanuto_style import NarutoStyle
 from fight.saske_style import SaskeStyle
 from fight.woailuo_style import WoailuoStyle
 from fight.kakaxi_style import KakaxiStyle
+from fight.zilaiye_style import ZilaiyeStyle
 from fight import saske_style
 
 class Controller():
@@ -301,9 +302,71 @@ class Controller():
     
     #自来也特效##############################################################################################
     
+    def zi_lai_ye_to_idle(self):
+        self.zi_lai_ye.change_to_status('idle')
+        
     def add_zi_lai_ye(self):
-        print()
+        self.naruto_style.remove_current_sprite_from_sprite_group()
+        self.zi_lai_ye = ZilaiyeStyle(self.sprite_group)
+        self.zi_lai_ye.set_left_padding(self.naruto_style.get_left_padding())
+        self.zi_lai_ye.change_to_status('出现')
+        self.zi_lai_ye.character['zilaiye/出现'].append_end_update_function(self.zi_lai_ye_to_idle)
+        
+    def hama_to_idle(self):
+        self.zi_lai_ye.revert_top_padding()
+        self.zi_lai_ye_tong_ling.set_current_sprite_stop_flush()
+        self.zi_lai_ye.set_top_padding(self.zi_lai_ye.get_top_padding() - 45)
+        self.zi_lai_ye.change_to_status('出现')
+        
+    def tong_ling(self):
+        self.zi_lai_ye_tong_ling = ZilaiyeStyle(self.sprite_group, situation_flag = 2)
+        self.zi_lai_ye_tong_ling.set_left_padding(self.zi_lai_ye.get_left_padding())
+        self.zi_lai_ye_tong_ling.set_top_padding(self.zi_lai_ye.get_top_padding())
+        self.zi_lai_ye_tong_ling.character['zilaiye/蛤蟆出现'].append_end_update_function(self.hama_to_idle)
+        self.zi_lai_ye.change_to_status('idle')
+        self.zi_lai_ye.set_top_padding(1000)
+        
+    def change_to_tong_ling(self):
+        self.zi_lai_ye.change_to_status('下蹲通灵')
+        self.zi_lai_ye.character['zilaiye/下蹲通灵'].append_end_update_function(self.tong_ling)
+        
+    def huo_yan_update_function(self, image_index):
+        print('huo yan image_index:' + str(image_index))
+        if image_index == 19:
+            self.zi_lai_ye_huo_you.character['zilaiye/火油'].clear_update_function() 
+        
+    def remove_huo_yan(self):
+        self.huo_yan.remove_current_sprite_from_sprite_group()
+        
+    def update_huo_you_function(self, image_index):
+        print('aaaa' + str(image_index))
+        if image_index == 1:
+            self.huo_yan = ZilaiyeStyle(self.sprite_group, situation_flag = 4)
+            self.huo_yan.set_left_padding(self.zi_lai_ye.get_left_padding() + 300)
+            self.huo_yan.set_top_padding(self.zi_lai_ye.get_top_padding() + 120)
+            self.huo_yan.character['zilaiye/长条火焰'].append_update_function(self.huo_yan_update_function)
+            self.huo_yan.character['zilaiye/长条火焰'].append_end_update_function(self.remove_huo_yan)
+        if image_index == 4:
+           self.zi_lai_ye_huo_you.character['zilaiye/火油'].image_index = 3 
+        
+        #火焰高度压缩并进行拉长，拉长
+        
+    def remove_huo_you(self):
+        self.zi_lai_ye_huo_you.remove_current_sprite_from_sprite_group()
+        
+    def show_fier(self):
+        self.zi_lai_ye_tong_ling.set_current_sprite_stop_flush()
+        self.zi_lai_ye_huo_you = ZilaiyeStyle(self.sprite_group, situation_flag = 3)
+        self.zi_lai_ye_huo_you.set_left_padding(self.zi_lai_ye.get_left_padding() + 105)
+        self.zi_lai_ye_huo_you.set_top_padding(self.zi_lai_ye.get_top_padding() + 10)
+        self.zi_lai_ye_huo_you.character['zilaiye/火油'].append_update_function(self.update_huo_you_function)
+        self.zi_lai_ye_huo_you.character['zilaiye/火油'].append_end_update_function(self.remove_huo_you)
     
+    def begin_fire(self):
+        self.zi_lai_ye.change_to_status('捂嘴喷火')
+        self.zi_lai_ye.set_current_sprite_stop_flush()
+        self.zi_lai_ye_tong_ling.change_to_status('蛤蟆喷火')
+        self.zi_lai_ye_tong_ling.character['zilaiye/蛤蟆喷火'].append_end_update_function(self.show_fier)
     #自来也特效##############################################################################################
     
     def handle_key_event(self):
@@ -314,13 +377,15 @@ class Controller():
             #self.sa_pu_song_zang()
             #self.sa_fu_jiu()
             #self.shui_long_dan_zhi_shu()
-            self.shen_wei()
+            #self.shen_wei()
+            self.change_to_tong_ling()
         elif self.key_controller.key_a:
             #self.add_wo_ai_luo()
-            self.add_ka_ka_xi()
+            self.add_zi_lai_ye()
         elif self.key_controller.key_s:
             #self.change_to_status('naruto/idle')
-            self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].clear_update_function()
+            #self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].clear_update_function()
+            self.begin_fire()
     
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller

@@ -63,12 +63,6 @@ class KakaxiStyle(Style):
         self.current_sprite.set_top_padding(GameCommonData.character_level)
         self.current_sprite.stop_flush = False
         
-    def revert_top_padding(self):
-        self.current_sprite.set_top_padding(GameCommonData.character_level)
-        
-    def get_reverse_top_padding(self):
-        return GameCommonData.character_level
-        
     def change_to_status(self, status):
         if status == '站直':
             Style.change_to_status(self, 'kakaxi/站直')
