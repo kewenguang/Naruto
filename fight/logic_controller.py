@@ -10,6 +10,7 @@ from fight.saske_style import SaskeStyle
 from fight.woailuo_style import WoailuoStyle
 from fight.kakaxi_style import KakaxiStyle
 from fight.zilaiye_style import ZilaiyeStyle
+from fight.pain_style import PainStyle
 from fight import saske_style
 
 class Controller():
@@ -342,14 +343,12 @@ class Controller():
         print('aaaa' + str(image_index))
         if image_index == 1:
             self.huo_yan = ZilaiyeStyle(self.sprite_group, situation_flag = 4)
-            self.huo_yan.set_left_padding(self.zi_lai_ye.get_left_padding() + 300)
-            self.huo_yan.set_top_padding(self.zi_lai_ye.get_top_padding() + 120)
+            self.huo_yan.set_left_padding(self.zi_lai_ye.get_left_padding() + 690)
+            self.huo_yan.set_top_padding(self.zi_lai_ye.get_top_padding() + 20)
             self.huo_yan.character['zilaiye/长条火焰'].append_update_function(self.huo_yan_update_function)
             self.huo_yan.character['zilaiye/长条火焰'].append_end_update_function(self.remove_huo_yan)
         if image_index == 4:
            self.zi_lai_ye_huo_you.character['zilaiye/火油'].image_index = 3 
-        
-        #火焰高度压缩并进行拉长，拉长
         
     def remove_huo_you(self):
         self.zi_lai_ye_huo_you.remove_current_sprite_from_sprite_group()
@@ -369,6 +368,50 @@ class Controller():
         self.zi_lai_ye_tong_ling.character['zilaiye/蛤蟆喷火'].append_end_update_function(self.show_fier)
     #自来也特效##############################################################################################
     
+    
+    
+    #佩恩特效###############################################################################################
+    def pain_to_idle(self):
+        self.pain.change_to_status('idle')
+    
+    def end_chu_xian_ge_qiu(self):
+        self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星旋转')
+    
+    def chu_xian_ge_qiu(self):
+        self.pain_di_bao_tian_xing_lun_hui_yan.remove_current_sprite_from_sprite_group()
+        self.pain_di_bao_tian_xing_qiu = PainStyle(self.sprite_group, situation_flag = 3)#.character['pain/地爆天星的球'].append_update_function(self.hama_to_idle)
+        self.pain_di_bao_tian_xing_qiu.set_left_padding(600)
+        self.pain_di_bao_tian_xing_qiu.set_top_padding(250)
+        self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].append_end_update_function(self.end_chu_xian_ge_qiu)
+    
+    def end_di_bao_tian_xing_jie_ying(self):
+        self.pain.set_current_sprite_stop_flush()
+        self.pain_di_bao_tian_xing_lun_hui_yan = PainStyle(self.sprite_group, situation_flag = 2)
+        self.pain_di_bao_tian_xing_lun_hui_yan.set_left_padding(600)
+        self.pain_di_bao_tian_xing_lun_hui_yan.set_top_padding(250)
+        self.pain_di_bao_tian_xing_lun_hui_yan.character['pain/轮回眼打开'].append_end_update_function(self.chu_xian_ge_qiu)
+        
+    def release_di_bao_tian_xing(self):
+        self.pain.change_to_status('地爆天星结印')
+        self.pain.character['pain/地爆天星结印'].append_end_update_function(self.end_di_bao_tian_xing_jie_ying)
+        
+    def pain_to_liu_dao_san(self):
+        self.pain.change_to_status('六道散')
+        self.pain.character['pain/六道散'].append_end_update_function(self.pain_to_idle)
+        
+    def add_pain(self):
+        self.saske_style.remove_current_sprite_from_sprite_group()
+        self.pain = PainStyle(self.sprite_group)
+        self.pain.set_left_padding(self.saske_style.get_left_padding())
+        self.pain.set_top_padding(self.saske_style.get_top_padding())
+        self.pain.change_to_status('出场')
+        self.pain.character['pain/出场'].append_end_update_function(self.pain_to_liu_dao_san)
+        
+    def xi_zhu_zi_lai_ye(self):
+        self.pain.change_to_status('地爆天星举手')
+    
+    #佩恩特效###############################################################################################
+    
     def handle_key_event(self):
         if self.key_controller.key_m:
             self.chu_fa_fen_shen()
@@ -378,14 +421,17 @@ class Controller():
             #self.sa_fu_jiu()
             #self.shui_long_dan_zhi_shu()
             #self.shen_wei()
-            self.change_to_tong_ling()
+            #self.change_to_tong_ling()
+            self.release_di_bao_tian_xing()
         elif self.key_controller.key_a:
             #self.add_wo_ai_luo()
-            self.add_zi_lai_ye()
+            #self.add_zi_lai_ye()
+            self.add_pain()
         elif self.key_controller.key_s:
             #self.change_to_status('naruto/idle')
             #self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].clear_update_function()
-            self.begin_fire()
+            #self.begin_fire()
+            self.xi_zhu_zi_lai_ye()
     
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller

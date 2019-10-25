@@ -37,6 +37,31 @@ def change_pic_height():
 #change_pic_height()
 #sys.exit()
         
+import cv2 as cv
+from math import *
+def rotate_image_in_angle(img, degree):
+    height, width = img.shape[:2]
+    heightNew = int(width * fabs(sin(radians(degree))) + height * fabs(cos(radians(degree))))
+    widthNew = int(height * fabs(sin(radians(degree))) + width * fabs(cos(radians(degree))))
+ 
+    matRotation = cv.getRotationMatrix2D((width / 2, height / 2), degree, 1)
+ 
+    matRotation[0, 2] += (widthNew - width) / 2
+    matRotation[1, 2] += (heightNew - height) / 2
+    imgRotation = cv.warpAffine(img, matRotation, (widthNew, heightNew), borderValue=(255, 255, 255))
+    return imgRotation
+
+def di_bao_tian_xing():
+    img = Image.open(prefix_dir + '/佩恩/地爆天星/519.png')
+    for i in range(18):
+        img_rotate = img.rotate(20*i)
+        img_rotate.save(prefix_dir + '/佩恩/地爆天星旋转/' + str(i*10) + '.png')
+        #img = rotate_image_in_angle(image, 20*i)
+        #cv.imwrite(prefix_dir + '/佩恩/地爆天星旋转/' + str(i*10) + '.png', img)
+
+#di_bao_tian_xing()
+#sys.exit()
+        
 def change_pic_color():
     for filename in os.listdir(input_dir):
         i = 1
@@ -324,13 +349,16 @@ def cut_off_white_left_padding():
         index_padding = index_padding + 1
         img_temp.save(output_dir + "/" + filename)
 
-input_dir = prefix_dir + '我爱罗/我爱罗_idle'
-output_dir = prefix_dir + '我爱罗/我爱罗_idle_change'
+input_dir = prefix_dir + '自来也/长条火焰'
+output_dir = prefix_dir + '自来也/旋转后的长条火焰'
 def resize_pic():
     for filename in os.listdir(input_dir):
         img = Image.open(input_dir + "/" + filename)
-        out = img.resize((int(img.size[0]*0.9), int(img.size[1]*0.9)), Image.ANTIALIAS)
+        out = img.resize((int(img.size[0]*4), int(img.size[1]*0.2)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
+
+#resize_pic()
+#sys.exit()
 
 def resize_one_pic_in_center():
     img = Image.open(input_dir + "/70.png")
@@ -433,7 +461,7 @@ def add_yun_duo_to_another_pic():
                 zilaiye_copy.putpixel((i, j), (data[0], data[1], data[2], data[3]))
         zilaiye_copy.save(output_dir + "/" + filename)        
 
-add_yun_duo_to_another_pic()
+#add_yun_duo_to_another_pic()
 
 def only_change_pic_height():
     img_one = Image.open(input_dir + "/233.png")
@@ -464,12 +492,12 @@ def find_dir_max_width_and_height(input_dir):
             max_height = img.size[1]
     return max_width, max_height
 
-input_dir = prefix_dir + '自来也/喷火'
-output_dir = prefix_dir + '自来也/喷火处理'
+input_dir = prefix_dir + '佩恩/出场'
+output_dir = prefix_dir + '佩恩/整理后的出场'
 def add_pic_to_max_width_and_max_height():
     max_width, max_height = find_dir_max_width_and_height(input_dir)
-    
-    img_white = Image.open(input_dir + "/233.png")
+
+    img_white = Image.open(input_dir + "/591.png")
     for i in range(img_white.size[0]):
         for j in range(img_white.size[1]):
             img_white.putpixel((i, j), (255, 255, 255, 255))
@@ -482,7 +510,7 @@ def add_pic_to_max_width_and_max_height():
         img_white_copy = img_white.copy()
         start_left = int(img_white_copy.size[0]/2) - int(img.size[0]/2)
         start_top = img_white_copy.size[1] - img.size[1]
-        left_top_data = img.getpixel((0, 10))
+        left_top_data = img.getpixel((0, 0))
         for i in range(img.size[0]):
             for j in range(img.size[1]):
                 data = img.getpixel((i, j))
@@ -493,6 +521,9 @@ def add_pic_to_max_width_and_max_height():
         
 #add_pic_to_max_width_and_max_height()
 #sys.exit()
+
+#加一个函数，对图片中的像素进行下降
+
 
 hama = prefix_dir + '自来也/蛤蟆/219.png'
 hama_yun_dir = prefix_dir + '自来也/蛤蟆的云'
