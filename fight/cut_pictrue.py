@@ -37,24 +37,12 @@ def change_pic_height():
 #change_pic_height()
 #sys.exit()
         
-import cv2 as cv
-from math import *
-def rotate_image_in_angle(img, degree):
-    height, width = img.shape[:2]
-    heightNew = int(width * fabs(sin(radians(degree))) + height * fabs(cos(radians(degree))))
-    widthNew = int(height * fabs(sin(radians(degree))) + width * fabs(cos(radians(degree))))
- 
-    matRotation = cv.getRotationMatrix2D((width / 2, height / 2), degree, 1)
- 
-    matRotation[0, 2] += (widthNew - width) / 2
-    matRotation[1, 2] += (heightNew - height) / 2
-    imgRotation = cv.warpAffine(img, matRotation, (widthNew, heightNew), borderValue=(255, 255, 255))
-    return imgRotation
+
 
 def di_bao_tian_xing():
-    img = Image.open(prefix_dir + '/佩恩/地爆天星/519.png')
-    for i in range(18):
-        img_rotate = img.rotate(20*i)
+    img = Image.open(prefix_dir + '/佩恩/地爆天星/774.png')
+    for i in range(36):
+        img_rotate = img.rotate(10*i)
         img_rotate.save(prefix_dir + '/佩恩/地爆天星旋转/' + str(i*10) + '.png')
         #img = rotate_image_in_angle(image, 20*i)
         #cv.imwrite(prefix_dir + '/佩恩/地爆天星旋转/' + str(i*10) + '.png', img)
@@ -62,6 +50,8 @@ def di_bao_tian_xing():
 #di_bao_tian_xing()
 #sys.exit()
         
+input_dir = prefix_dir + '佩恩/出场'
+output_dir = prefix_dir + '佩恩/整理后的出场'
 def change_pic_color():
     for filename in os.listdir(input_dir):
         i = 1
@@ -69,9 +59,11 @@ def change_pic_color():
         img = Image.open(input_dir + "/" + filename)#读取系统的内照片
         print (img.size)#打印图片大小
         
-        print("img.getpixel((0,0))")
-        print (img.getpixel((0, 0)))
-        print("img.getpixel((0,0))")
+        #print("img.getpixel((0,0))")
+        #print (img.getpixel((0, 0)))
+        #print("img.getpixel((0,0))")
+        
+        data_left_top = img.getpixel((0, 0))
         
         width = img.size[0]#长度
         height = img.size[1]#宽度
@@ -80,16 +72,41 @@ def change_pic_color():
             data = (img.getpixel((i,j)))#打印该图片的所有点
             #print (data)#打印每个像素点的颜色RGBA的值(r,g,b,alpha)
             #print (data[0])#打印RGBA的r值
-            #if data[0] == 159 and data[1] == 186 and data[2] == 193 and data[3] == 255:
-            #    img.putpixel((i,j),(255, 255, 255, 0))
-            img.putpixel((i,j),(255, 255, 255, 0))
+            #if i == 167 and j == 197:
+            #    print(data)
+            if data[0] == data_left_top[0] and data[1] == data_left_top[1] and data[2] == data_left_top[2] and data[3] == data_left_top[3]:
+                img.putpixel((i, j),(255, 255, 255, 255))
+            #if data[0] == 25 and data[1] == 25 and data[2] == 25 and data[3] == 255:
+            #    img.putpixel((i,j),(0, 0, 0, 255)) 
+            #img.putpixel((i,j),(255, 255, 255, 0))
             #if (data[0]>=170 and data[1]>=170 and data[2]>=170):#RGBA的r值大于170，并且g值大于170,并且b值大于170
             #  img.putpixel((i,j),(234, 53, 57, 255))#则这些像素点的颜色改成大红色
         
-        img = img.convert("RGB")#把图片强制转成RGB
         img.save(output_dir + "/" + filename)#保存修改像素点后的图片
-
 #change_pic_color()
+#sys.exit()
+
+one_pic = prefix_dir + '佩恩/地爆天星个球/774.png'
+def add_pic_to_center():
+    img_one = Image.open(one_pic)
+    for i in range(img_one.size[0]):
+        for j in range(img_one.size[1]):
+            img_one.putpixel((i, j), (255, 255, 255, 255))
+    for filename in os.listdir(input_dir):
+        img_white = img_one.copy()
+        img = Image.open(input_dir + '/' + filename)
+        start_left = int(img_white.size[0]/2) - int(img.size[0]/2)
+        start_top = int(img_white.size[1]/2) - int(img.size[1]/2)
+        top_left_data = img.getpixel((0, 0))
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                if data[0] == top_left_data[0] and data[1] == top_left_data[1] and data[2] == top_left_data[2] and data[3] == top_left_data[3]:
+                    continue
+                img_white.putpixel((start_left + i, start_top +j), (data[0], data[1], data[2], data[3]))
+        img_white.save(output_dir + "/" + filename)
+        
+#add_pic_to_center()
 #sys.exit()
 
 def change_pic_color_in_width():
@@ -349,15 +366,60 @@ def cut_off_white_left_padding():
         index_padding = index_padding + 1
         img_temp.save(output_dir + "/" + filename)
 
-input_dir = prefix_dir + '自来也/长条火焰'
-output_dir = prefix_dir + '自来也/旋转后的长条火焰'
+input_dir = prefix_dir + '佩恩/出场'
+output_dir = prefix_dir + '佩恩/整理后的出场'
 def resize_pic():
     for filename in os.listdir(input_dir):
         img = Image.open(input_dir + "/" + filename)
-        out = img.resize((int(img.size[0]*4), int(img.size[1]*0.2)), Image.ANTIALIAS)
+        out = img.resize((int(img.size[0]*3), int(img.size[1]*3)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
 
 #resize_pic()
+#sys.exit()
+
+def get_center_pixel():
+    width = 720 - 317
+    height = 870 - 460
+    img_white = Image.open(input_dir + '/777.png')
+    img_white = img_white.crop((0,0,width,height))
+    for i in range(img_white.size[0]):
+        for j in range(img_white.size[1]):
+            img_white.putpixel((i, j), (255,255,255,255))
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + '/' + filename)
+        img_white_copy = img_white.copy()
+        for i in range(img_white_copy.size[0]):
+            for j in range(img_white_copy.size[1]):
+                data = img.getpixel((i + 317, j + 460))
+                img_white_copy.putpixel((i , j ), (data[0], data[1], data[2], data[3]))
+        img_white_copy.save(output_dir + '/' + filename)
+
+def pic_to_square():
+    #球的形成与旋转
+    img_white = Image.open(input_dir + '/0.png')
+    max_length = img_white.size[0]
+    if max_length <  img_white.size[1]:
+        max_length = img_white.size[1]
+    
+    img_white = img_white.crop((0, 0, max_length, max_length))
+    for i in range(img_white.size[0]):
+        for j in range(img_white.size[1]):
+            img_white.putpixel((i, j), (255, 255, 255, 255))
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + '/' + filename)
+        start_left_padding = int(max_length/2) - int(img.size[0]/2)
+        start_top_padding = int(max_length/2) - int(img.size[1]/2)
+        img_white_copy = img_white.copy()
+        
+        for i in range(img.size[0]):
+            for j in range(img.size[1]):
+                data = img.getpixel((i, j))
+                img_white_copy.putpixel((i + start_left_padding ,j + start_top_padding), (data[0], data[1], data[2], data[3]))
+        img_white_copy.save(output_dir + '/' + filename)
+pic_to_square()
+sys.exit()
+
+#get_center_pixel()
 #sys.exit()
 
 def resize_one_pic_in_center():
@@ -497,7 +559,7 @@ output_dir = prefix_dir + '佩恩/整理后的出场'
 def add_pic_to_max_width_and_max_height():
     max_width, max_height = find_dir_max_width_and_height(input_dir)
 
-    img_white = Image.open(input_dir + "/591.png")
+    img_white = Image.open(input_dir + "/603.png")
     for i in range(img_white.size[0]):
         for j in range(img_white.size[1]):
             img_white.putpixel((i, j), (255, 255, 255, 255))
@@ -523,6 +585,47 @@ def add_pic_to_max_width_and_max_height():
 #sys.exit()
 
 #加一个函数，对图片中的像素进行下降
+def pixel_down():
+    img = Image.open(input_dir + '/603.png')
+    padding_down = 22 #下降22个像素
+    img_copy = img.copy()
+    for i in range(img_copy.size[0]):
+        for j in range(img_copy.size[1]):
+            img_copy.putpixel((i, j), (255, 255, 255, 255))
+    data_top_left = img.getpixel((0, 0))
+    for i in range(img.size[0]):
+        for j in range(img.size[1] - padding_down):
+            data = img.getpixel((i, j))
+            if data[0] == data_top_left[0] and data[1] == data_top_left[1] and data[2] == data_top_left[2] and data[3] == data_top_left[3]:
+                continue
+            img_copy.putpixel((i, j + padding_down), (data[0], data[1], data[2], data[3]))
+    img_copy.save(output_dir + '/603.png')
+#pixel_down()
+#sys.exit()
+
+def add_height_and_pixel_down(img, height):
+    img_copy = img.copy()
+    for i in range(img_copy.size[0]):
+        for j in range(img_copy.size[1]):
+            img_copy.putpixel((i, j), (255, 255, 255, 255))
+    img_copy = img_copy.crop((0, 0, img_copy.size[0], height))
+    for i in range(img_copy.size[0]):
+        for j in range(img_copy.size[1]):
+            img_copy.putpixel((i, j), (255, 255, 255, 255))
+    height_padding = height - img.size[1]
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            data = img.getpixel((i, j))
+            img_copy.putpixel((i, j + height_padding),(data[0], data[1], data[2], data[3]))
+    return img_copy
+            
+def exe_add_height_and_pixel_down():
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + '/' + filename)
+        zeng_gao = add_height_and_pixel_down(img, 125)
+        zeng_gao.save(output_dir + '/' + filename)
+#exe_add_height_and_pixel_down()
+#sys.exit()
 
 
 hama = prefix_dir + '自来也/蛤蟆/219.png'

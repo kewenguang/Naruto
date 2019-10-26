@@ -58,6 +58,9 @@ class Style():
     def get_reverse_top_padding(self):
         return GameCommonData.character_level
     
+    def get_reverse_left_character_padding(self):
+        return GameCommonData.left_character_padding
+    
     def set_current_sprite_stop_flush(self):
         self.current_sprite.stop_flush = True
     
@@ -104,7 +107,8 @@ class GameCommonData():
     WIDTH = 1500
     HEIGHT = 600
     
-    character_level = HEIGHT - 200
+    character_level = HEIGHT - 50
+    left_character_padding = 120
     
     #游戏人物可移动的左右边界情况
     LeftPadding = 200

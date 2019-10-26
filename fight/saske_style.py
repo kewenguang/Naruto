@@ -141,7 +141,7 @@ class SaskeStyle(Style):
         
     def update_run(self, image_index):
         current_left_padding = self.character["saske/run"].get_left_padding()
-        being_left_padding = current_left_padding - 7
+        being_left_padding = current_left_padding - 11
         if being_left_padding > GameCommonData.LeftPadding:
             self.character["saske/run"].set_left_padding(being_left_padding)  
     

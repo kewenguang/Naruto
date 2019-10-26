@@ -11,6 +11,7 @@ from fight.woailuo_style import WoailuoStyle
 from fight.kakaxi_style import KakaxiStyle
 from fight.zilaiye_style import ZilaiyeStyle
 from fight.pain_style import PainStyle
+from fight.resource_load import Color
 from fight import saske_style
 
 class Controller():
@@ -26,6 +27,7 @@ class Controller():
         self.insert_action_num = 0
         
         self.test_flag = True
+        self.update_screen = self.update_screen_with_white
         
     def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
@@ -78,7 +80,7 @@ class Controller():
             self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
             self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
             #self.list_naruto[self.insert_action_num - 1].change_to_status('一个分身')
-        self.list_naruto[self.insert_action_num].set_current_sprite_show()
+        self.list_naruto[self.insert_action_num].revert_top_padding()
         self.list_naruto[self.insert_action_num].append_end_update_yigefenshen()#影分身结束之后去结印
         self.list_naruto[self.insert_action_num].append_jieyin_end_func(self.lianxufenshen)
         self.insert_action_num = self.insert_action_num + 1
@@ -93,7 +95,7 @@ class Controller():
             naruto.change_to_status('一个分身')
             naruto.set_left_padding((len(self.list_naruto) + 1) * 170 + len(self.list_naruto) * 120)
             self.list_naruto.append(naruto)
-            naruto.set_current_sprite_hide()
+            naruto.set_top_padding(1000)
         self.lianxufenshen()
         #单个分身的65-71是和做分身之术，所以重新捣鼓图片生成一下 以65为基准的分身之术
         #优化，注释掉那些不需要加载的图片，init方法应该可以自选加载哪些图片，可以加函数
@@ -374,15 +376,29 @@ class Controller():
     def pain_to_idle(self):
         self.pain.change_to_status('idle')
     
-    def end_chu_xian_ge_qiu(self):
-        self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星旋转')
+    def remove_bao_zha(self):
+        self.pain_di_bao_tian_xing_qiu.remove_current_sprite_from_sprite_group()
+        self.pain.change_to_status('idle')
+    
+    def di_bao_tian_xing_bao_zha(self):
+        self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星的爆炸')
+        self.pain_di_bao_tian_xing_qiu.set_top_padding(350)
+        self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的爆炸'].append_end_update_function(self.remove_bao_zha) 
+    
+    #def end_chu_xian_ge_qiu(self):
+    #    self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星旋转')
+    #    self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星旋转'].append_end_update_function(self.di_bao_tian_xing_bao_zha) 
     
     def chu_xian_ge_qiu(self):
         self.pain_di_bao_tian_xing_lun_hui_yan.remove_current_sprite_from_sprite_group()
         self.pain_di_bao_tian_xing_qiu = PainStyle(self.sprite_group, situation_flag = 3)#.character['pain/地爆天星的球'].append_update_function(self.hama_to_idle)
         self.pain_di_bao_tian_xing_qiu.set_left_padding(600)
-        self.pain_di_bao_tian_xing_qiu.set_top_padding(250)
-        self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].append_end_update_function(self.end_chu_xian_ge_qiu)
+        self.pain_di_bao_tian_xing_qiu.set_top_padding(400)
+        self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].append_end_update_function(self.di_bao_tian_xing_bao_zha)
+        self.update_screen = self.update_screen_with_white
+    
+    def draw_screen_with_black(self):
+        self.screen.fill(Color.BLACK)
     
     def end_di_bao_tian_xing_jie_ying(self):
         self.pain.set_current_sprite_stop_flush()
@@ -390,6 +406,7 @@ class Controller():
         self.pain_di_bao_tian_xing_lun_hui_yan.set_left_padding(600)
         self.pain_di_bao_tian_xing_lun_hui_yan.set_top_padding(250)
         self.pain_di_bao_tian_xing_lun_hui_yan.character['pain/轮回眼打开'].append_end_update_function(self.chu_xian_ge_qiu)
+        self.update_screen = self.draw_screen_with_black
         
     def release_di_bao_tian_xing(self):
         self.pain.change_to_status('地爆天星结印')
@@ -410,7 +427,11 @@ class Controller():
     def xi_zhu_zi_lai_ye(self):
         self.pain.change_to_status('地爆天星举手')
     
+    #对手在哪里，佩恩的球就在哪里形成
     #佩恩特效###############################################################################################
+    
+    def update_screen_with_white(self):
+        self.screen.fill(Color.WHITE)
     
     def handle_key_event(self):
         if self.key_controller.key_m:
@@ -435,6 +456,9 @@ class Controller():
     
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
+        
+    def set_screen(self, screen):
+        self.screen = screen
         
     def sleep(self, time_interval):
         if self.flush_time == 0:
@@ -480,7 +504,7 @@ class Controller():
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
             self.handle_key_event()
-            return True
+            #return True
             if self.insert_action_num == 0 and self.sleep(3000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
@@ -529,12 +553,12 @@ class Controller():
     def start(self):
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':
             if self.sleep(1000):
-                #self.naruto_style.change_to_status('色诱之术')
-                #self.saske_style.change_to_status('开篇挥手')
+                self.naruto_style.change_to_status('色诱之术')
+                self.saske_style.change_to_status('开篇挥手')
                 
                 #手动添加一下，下面这些函数以后是要删除掉的
-                self.naruto_end_update_seyouzhishu()
-                self.saske_end_update_kai_pian_hui_shou()
+                #self.naruto_end_update_seyouzhishu()
+                #self.saske_end_update_kai_pian_hui_shou()
                 
                 self.naruto_style.append_end_update_seyouzhishu(self.naruto_end_update_seyouzhishu)
                 self.saske_style.append_end_update_kai_pian_hui_shou(self.saske_end_update_kai_pian_hui_shou)

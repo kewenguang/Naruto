@@ -34,10 +34,24 @@ all_sprites = pygame.sprite.Group()
 
 logic_controller = Controller(all_sprites)
 logic_controller.set_key_controller(key_controller)
+logic_controller.set_screen(screen)
 #logic_controller.set_sprite_group(all_sprites)
 logic_controller.ready()
 
 running = True
+
+#测试播放音乐
+pygame.mixer.init()
+pygame.mixer.music.load('../assets/bgm/游戏开始的音乐.mp3')
+pygame.mixer.music.play(-1, 0) #第一个参数是播放次数，-1会导致循环播放  第二个参数表示第几秒开始播放
+#pygame.mixer.music.stop()
+
+#播放音效
+'''pygame.mixer.init()
+sound = pygame.mixer.Sound('./assets/507.mp3')
+sound.play()
+sound.stop()'''
+
 while running:
     
     #GameCommonData.tick(FPS)
@@ -53,7 +67,7 @@ while running:
                 running = False
             key_controller.key_response(event.key)
                 
-    screen.fill(Color.WHITE)
+    logic_controller.update_screen()
     #background_rect = multi_shadow_separation_images[0].get_rect()
     #screen.blit(multi_shadow_separation_images[0], background_rect)
     

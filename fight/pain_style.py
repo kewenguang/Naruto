@@ -20,7 +20,7 @@ class PainStyle(Style):
             pain_image_url = ['pain/轮回眼打开']
             self.add_sprite(pain_image_url[0])
         elif situation_flag == 3:
-            pain_image_url = ['pain/地爆天星的球', 'pain/地爆天星旋转']
+            pain_image_url = ['pain/地爆天星的球', 'pain/地爆天星的爆炸']
             for i in range(len(pain_image_url)):
                 print('pain_image_url[i]:' + pain_image_url[i])
                 self.add_sprite(pain_image_url[i])
@@ -29,7 +29,7 @@ class PainStyle(Style):
             pain_image_url = ['pain/地爆天星的爆炸']
             self.add_sprite(pain_image_url[0])
         if situation_flag == 1:
-            self.character["pain/idle"].set_frame_rate(8)
+            self.character["pain/idle"].set_frame_rate(17)
             self.character["pain/出场"].set_frame_rate(8)
             self.character["pain/地爆天星结印"].set_frame_rate(8)
             self.character["pain/六道散"].set_frame_rate(5)
@@ -44,11 +44,7 @@ class PainStyle(Style):
             self.sprite_group.add(self.character["pain/地爆天星的球"])
             self.current_sprite = self.character["pain/地爆天星的球"]
             self.character["pain/地爆天星的球"].set_frame_rate(4)
-            self.character["pain/地爆天星旋转"].set_frame_rate(8)
-        elif situation_flag == 4:
-            self.sprite_group.add(self.character["pain/地爆天星的爆炸"])
-            self.current_sprite = self.character["pain/地爆天星的爆炸"]
-            self.character["pain/地爆天星的爆炸"].set_frame_rate(8)
+            self.character["pain/地爆天星的爆炸"].set_frame_rate(16)
             
         self.current_sprite.set_top_padding(GameCommonData.character_level)
         self.current_sprite.stop_flush = False
@@ -72,3 +68,6 @@ class PainStyle(Style):
         elif status == '地爆天星旋转':
             Style.change_to_status(self, 'pain/地爆天星旋转')
             self.status = '地爆天星旋转'
+        elif status == '地爆天星的爆炸':
+            Style.change_to_status(self, 'pain/地爆天星的爆炸')
+            self.status = '地爆天星的爆炸'
