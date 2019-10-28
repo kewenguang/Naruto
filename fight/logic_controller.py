@@ -42,10 +42,22 @@ class Controller():
         self.insert_action_num = self.insert_action_num - 1
         print('self.insert_action_num:' + str(self.insert_action_num))
     
+    #前面的鸣人走到一定距离了后面的鸣人才跟着走
+    def update_luo_xuan_wan(self, image_index):
+        forward_left_padding = self.list_naruto[self.insert_action_num - 1].get_left_padding()
+        back_left_padding = self.list_naruto[self.insert_action_num - 2].get_left_padding()
+        if forward_left_padding - back_left_padding > 200:
+            self.insert_action_num = self.insert_action_num - 1
+            self.multi_shadow_separation_end()
+    
     def multi_shadow_separation_end(self):
-        for i in range(len(self.list_naruto)):
-            self.list_naruto[i].change_to_status('螺旋丸')
-            self.list_naruto[i].character['naruto/螺旋丸'].append_end_update_function(self.sub_insert_action_num)
+        self.list_naruto[self.insert_action_num - 1].change_to_status('螺旋丸')
+        #self.list_naruto[self.insert_action_num - 1].character['naruto/螺旋丸'].append_end_update_function(self.sub_insert_action_num)
+        if self.insert_action_num > 1:
+            self.list_naruto[self.insert_action_num - 1].character['naruto/螺旋丸'].append_update_function(self.update_luo_xuan_wan)
+        #for i in range(len(self.list_naruto)):
+        #    self.list_naruto[i].change_to_status('螺旋丸')
+        #    self.list_naruto[i].character['naruto/螺旋丸'].append_end_update_function(self.sub_insert_action_num)
             
     def multi_shadow_separation_update(self, image_index):
         if image_index % 5 == 0 and image_index < 62 and image_index > 9:
@@ -61,28 +73,41 @@ class Controller():
         naruto.set_top_padding( self.saske_style.get_top_padding() + 105)
         naruto.character['naruto/multi_shadow_separation'].append_update_function(self.multi_shadow_separation_update)
         
-        for i in range(len(self.list_naruto)):
+        self.list_naruto[self.insert_action_num - 1].set_current_sprite_stop_flush()
+        self.list_naruto[self.insert_action_num - 1].set_saske(self.saske_style)
+        for i in range(len(self.list_naruto) - 1):
             self.list_naruto[i].change_to_status_for_fenshen('idle')
             self.list_naruto[i].set_saske(self.saske_style)
             self.naruto_style.change_to_status('idle')
         
         naruto.character["naruto/multi_shadow_separation"].append_end_update_function(self.multi_shadow_separation_end)
         
+    def update_yi_ge_fen_shen(self, image_index):
+        if image_index == 4:
+            #self.list_naruto[self.insert_action_num - 1].change_to_status_idle() 
+            self.lianxufenshen()
         
     def lianxufenshen(self):
         if self.insert_action_num > self.fenshen_num - 1:
             self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
-            self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
+            #self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
+            self.list_naruto[self.insert_action_num - 1].character["naruto/一个分身"].clear_end_update_function()
             self.list_naruto[self.insert_action_num - 1].change_to_status('结印')
             self.list_naruto[self.insert_action_num - 1].append_jieyin_end_func(self.end_update_fenshen)
             return
-        if self.insert_action_num != 0:
-            self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
-            self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
+        #if self.insert_action_num != 0:
+            #self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
+            #self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
             #self.list_naruto[self.insert_action_num - 1].change_to_status('一个分身')
         self.list_naruto[self.insert_action_num].revert_top_padding()
-        self.list_naruto[self.insert_action_num].append_end_update_yigefenshen()#影分身结束之后去结印
-        self.list_naruto[self.insert_action_num].append_jieyin_end_func(self.lianxufenshen)
+        self.list_naruto[self.insert_action_num].change_to_status('一个分身')
+        #self.list_naruto[self.insert_action_num].character["naruto/一个分身"].append_end_update_function(self.update_yi_ge_fen_shen)
+        self.list_naruto[self.insert_action_num].character["naruto/一个分身"].append_update_function(self.update_yi_ge_fen_shen)
+        self.list_naruto[self.insert_action_num].character["naruto/一个分身"].append_end_update_function(self.list_naruto[self.insert_action_num].change_to_status_idle)
+        #分身之后不结印，只有最后一个结印搞出一大堆分身
+        #self.list_naruto[self.insert_action_num].append_end_update_yigefenshen()#影分身结束之后去结印
+        #不再使用结印的末尾去分身，而是分身的过程再分身
+        #self.list_naruto[self.insert_action_num].append_jieyin_end_func(self.lianxufenshen)
         self.insert_action_num = self.insert_action_num + 1
         
             
@@ -92,8 +117,8 @@ class Controller():
             naruto = NarutoStyle(self.sprite_group, situation_flag = 2)
             naruto.add_to_sprite_group()
             naruto.set_key_controller(self.key_controller)
-            naruto.change_to_status('一个分身')
-            naruto.set_left_padding((len(self.list_naruto) + 1) * 170 + len(self.list_naruto) * 120)
+            naruto.change_to_status('idle')
+            naruto.set_left_padding(self.naruto_style.get_left_padding() + (len(self.list_naruto) + 1) * 170)
             self.list_naruto.append(naruto)
             naruto.set_top_padding(1000)
         self.lianxufenshen()
@@ -557,11 +582,11 @@ class Controller():
                 self.saske_style.change_to_status('开篇挥手')
                 
                 #手动添加一下，下面这些函数以后是要删除掉的
-                #self.naruto_end_update_seyouzhishu()
-                #self.saske_end_update_kai_pian_hui_shou()
+                self.naruto_end_update_seyouzhishu()
+                self.saske_end_update_kai_pian_hui_shou()
                 
-                self.naruto_style.append_end_update_seyouzhishu(self.naruto_end_update_seyouzhishu)
-                self.saske_style.append_end_update_kai_pian_hui_shou(self.saske_end_update_kai_pian_hui_shou)
+                #self.naruto_style.append_end_update_seyouzhishu(self.naruto_end_update_seyouzhishu)
+                #self.saske_style.append_end_update_kai_pian_hui_shou(self.saske_end_update_kai_pian_hui_shou)
     
     #看看有没有用python来裁剪图片的
     def update(self):

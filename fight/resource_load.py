@@ -104,7 +104,7 @@ class Style():
         
 class GameCommonData():
     #窗体的宽高
-    WIDTH = 1500
+    WIDTH = 1200
     HEIGHT = 600
     
     character_level = HEIGHT - 50

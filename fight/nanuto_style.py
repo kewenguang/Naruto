@@ -106,7 +106,7 @@ class NarutoStyle(Style):
             self.current_sprite.set_left_padding(self.get_reverse_left_character_padding())    ##############################################################
             self.current_sprite.set_top_padding(GameCommonData.character_level)
             
-            self.character["naruto/一个分身"].set_frame_rate(23)
+            self.character["naruto/一个分身"].set_frame_rate(8)
             
             self.character["naruto/结印"].set_frame_rate(18)
             self.character["naruto/结印"].append_end_update_function(self.set_naruto_jieyin_end_func) 
@@ -147,7 +147,7 @@ class NarutoStyle(Style):
             between_padding = self.saske.get_left_padding() - self.character["naruto/螺旋丸"].get_left_padding()
 
             if between_padding > 65:
-                self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 25)
+                self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 33)
                 self.character["naruto/螺旋丸"].image_index = 14
         elif image_index == 16:
             self.saske.change_to_status('后仰')
@@ -192,7 +192,6 @@ class NarutoStyle(Style):
             Style.change_to_status(self, 'naruto/色诱之术')
             self.status = '色诱之术'
             self.character["naruto/色诱之术"].set_left_padding(145)
-            #看一下分身究竟该怎么表现，另外，佐助被打飞一定是飞回原来的位置  不然位置偏移不好放大招
         elif status == '一个分身':
             Style.change_to_status(self, 'naruto/一个分身')
             self.status = '一个分身'
