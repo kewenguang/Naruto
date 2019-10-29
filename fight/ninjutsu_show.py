@@ -42,15 +42,18 @@ running = True
 
 #测试播放音乐
 pygame.mixer.init()
-pygame.mixer.music.load('../assets/bgm/游戏开始的音乐.mp3')
-pygame.mixer.music.play(-1, 0) #第一个参数是播放次数，-1会导致循环播放  第二个参数表示第几秒开始播放
+#pygame.mixer.music.load('../assets/bgm/游戏开始的音乐.mp3')
+#pygame.mixer.music.play(-1, 0) #第一个参数是播放次数，-1会导致循环播放  第二个参数表示第几秒开始播放
+logic_controller.set_mixer(pygame.mixer)
 #pygame.mixer.music.stop()
 
 #播放音效
-'''pygame.mixer.init()
-sound = pygame.mixer.Sound('./assets/507.mp3')
-sound.play()
-sound.stop()'''
+''''''
+#pygame.mixer.init()
+#sound = pygame.mixer.Sound('./assets/507.mp3')
+#logic_controller.set_mixer_sound(sound)
+#sound.play()
+#sound.stop()
 
 while running:
     

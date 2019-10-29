@@ -36,6 +36,16 @@ class Controller():
         for i in range(len(self.list_naruto)):
             self.sprite_group.remove_internal(self.list_naruto[i])
         
+    def set_mixer(self, mixer):
+        self.mixer = mixer
+    
+    def play_music(self, url):
+        self.mixer.music.load('../assets/bgm/' + url)
+        self.mixer.music.play(1, 0)
+        
+    def play_sound(self, url):
+        sound = self.mixer.Sound('../assets/bgm/' + url)
+        sound.play()
         
     #鸣人特效##############################################################################################
     def sub_insert_action_num(self):
@@ -44,11 +54,22 @@ class Controller():
     
     #前面的鸣人走到一定距离了后面的鸣人才跟着走
     def update_luo_xuan_wan(self, image_index):
+        #elif image_index == 10:
+        #    self.play_sound('影分身消失.wav')
+        
         forward_left_padding = self.list_naruto[self.insert_action_num - 1].get_left_padding()
         back_left_padding = self.list_naruto[self.insert_action_num - 2].get_left_padding()
         if forward_left_padding - back_left_padding > 200:
             self.insert_action_num = self.insert_action_num - 1
             self.multi_shadow_separation_end()
+    
+    def cast_voice_luo_xuan_wan(self, image_index):
+        if image_index == 2:
+            self.play_sound('通灵出来的声音.wav')
+        elif image_index == 5:
+            self.play_music('螺旋丸声音.mp3')
+        elif image_index == 23:
+            self.play_sound('影分身消失.wav')
     
     def multi_shadow_separation_end(self):
         self.list_naruto[self.insert_action_num - 1].change_to_status('螺旋丸')
@@ -62,6 +83,8 @@ class Controller():
     def multi_shadow_separation_update(self, image_index):
         if image_index % 5 == 0 and image_index < 62 and image_index > 9:
             self.saske_style.change_to_houyang()
+        if image_index != 0 and image_index < 45 and image_index%5 == 0:
+            self.play_music('yun_beng.mp3')
         
     def end_update_fenshen(self):
         print("6个放完了，接下来是多重影分身")
@@ -79,13 +102,16 @@ class Controller():
             self.list_naruto[i].change_to_status_for_fenshen('idle')
             self.list_naruto[i].set_saske(self.saske_style)
             self.naruto_style.change_to_status('idle')
-        
+        for i in range(self.fenshen_num):
+            self.list_naruto[i].character['naruto/螺旋丸'].append_update_function(self.cast_voice_luo_xuan_wan)
         naruto.character["naruto/multi_shadow_separation"].append_end_update_function(self.multi_shadow_separation_end)
         
     def update_yi_ge_fen_shen(self, image_index):
         if image_index == 4:
             #self.list_naruto[self.insert_action_num - 1].change_to_status_idle() 
             self.lianxufenshen()
+        elif image_index == 1:
+            self.play_sound('通灵出来的声音.wav')
         
     def lianxufenshen(self):
         if self.insert_action_num > self.fenshen_num - 1:
@@ -99,6 +125,7 @@ class Controller():
             #self.list_naruto[self.insert_action_num - 1].clear_end_update_yigefenshen()
             #self.list_naruto[self.insert_action_num - 1].clear_end_update_jieyin_by_index(1)
             #self.list_naruto[self.insert_action_num - 1].change_to_status('一个分身')
+        
         self.list_naruto[self.insert_action_num].revert_top_padding()
         self.list_naruto[self.insert_action_num].change_to_status('一个分身')
         #self.list_naruto[self.insert_action_num].character["naruto/一个分身"].append_end_update_function(self.update_yi_ge_fen_shen)
