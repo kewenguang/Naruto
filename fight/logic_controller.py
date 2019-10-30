@@ -52,38 +52,63 @@ class Controller():
         self.insert_action_num = self.insert_action_num - 1
         print('self.insert_action_num:' + str(self.insert_action_num))
     
+    '''
     #前面的鸣人走到一定距离了后面的鸣人才跟着走
     def update_luo_xuan_wan(self, image_index):
-        #elif image_index == 10:
-        #    self.play_sound('影分身消失.wav')
+        if image_index == 10:
+            forward_left_padding = self.list_naruto[self.insert_action_num - 1].get_left_padding()
+            back_left_padding = self.list_naruto[self.insert_action_num - 2].get_left_padding()
+            if forward_left_padding - back_left_padding > 200:
+                self.insert_action_num = self.insert_action_num - 1'''
         
-        forward_left_padding = self.list_naruto[self.insert_action_num - 1].get_left_padding()
-        back_left_padding = self.list_naruto[self.insert_action_num - 2].get_left_padding()
-        if forward_left_padding - back_left_padding > 200:
-            self.insert_action_num = self.insert_action_num - 1
-            self.multi_shadow_separation_end()
     
     def cast_voice_luo_xuan_wan(self, image_index):
+        if image_index == 17:
+            self.play_music('打中别人.mp3')
+        elif image_index == 19:
+            self.play_sound('影分身消失.wav')
+            
+    
+    def cast_voice_luo_xuan_wan_once(self, image_index):
         if image_index == 2:
             self.play_sound('通灵出来的声音.wav')
         elif image_index == 5:
             self.play_music('螺旋丸声音.mp3')
-        elif image_index == 23:
+        elif image_index == 10:
             self.play_sound('影分身消失.wav')
+        elif image_index == 14:
+            if self.list_naruto[len(self.list_naruto) - 1].speed != 40:
+                self.play_sound('开了惊门快速跑.wav')
+            self.list_naruto[len(self.list_naruto) - 1].speed = 40
+    
+    def end_luo_xuan_wan(self):
+        self.list_naruto[self.insert_action_num - 2].speed = 40
+        self.insert_action_num = self.insert_action_num - 1
+        self.play_sound('开了惊门快速跑.wav')
     
     def multi_shadow_separation_end(self):
-        self.list_naruto[self.insert_action_num - 1].change_to_status('螺旋丸')
+        #self.list_naruto[self.insert_action_num - 1].change_to_status('螺旋丸')
         #self.list_naruto[self.insert_action_num - 1].character['naruto/螺旋丸'].append_end_update_function(self.sub_insert_action_num)
-        if self.insert_action_num > 1:
-            self.list_naruto[self.insert_action_num - 1].character['naruto/螺旋丸'].append_update_function(self.update_luo_xuan_wan)
-        #for i in range(len(self.list_naruto)):
-        #    self.list_naruto[i].change_to_status('螺旋丸')
-        #    self.list_naruto[i].character['naruto/螺旋丸'].append_end_update_function(self.sub_insert_action_num)
+        #if self.insert_action_num > 1:
+        #    self.list_naruto[self.insert_action_num - 1].character['naruto/螺旋丸'].append_update_function(self.update_luo_xuan_wan)
+        #for i in range(len(self.list_naruto) - 1):
+        #    self.list_naruto[i].character['naruto/螺旋丸'].append_update_function(self.list_naruto[i].update_stop_flush)
+            
+        for i in range(len(self.list_naruto) - 2):
+            self.list_naruto[i].speed = 9
+            
+        for i in range(len(self.list_naruto)):
+            self.list_naruto[i].change_to_status('螺旋丸')
+            #self.list_naruto[i].character['naruto/螺旋丸'].append_update_function(self.update_luo_xuan_wan)
+            self.list_naruto[i].character['naruto/螺旋丸'].append_update_function(self.cast_voice_luo_xuan_wan)
+            if i != 0:
+                self.list_naruto[i].character['naruto/螺旋丸'].append_end_update_function(self.end_luo_xuan_wan)
+        self.list_naruto[0].character['naruto/螺旋丸'].append_update_function(self.cast_voice_luo_xuan_wan_once)
             
     def multi_shadow_separation_update(self, image_index):
         if image_index % 5 == 0 and image_index < 62 and image_index > 9:
             self.saske_style.change_to_houyang()
-        if image_index != 0 and image_index < 45 and image_index%5 == 0:
+        if image_index != 0 and image_index < 51 and image_index%5 == 0:
             self.play_music('yun_beng.mp3')
         
     def end_update_fenshen(self):
@@ -102,8 +127,6 @@ class Controller():
             self.list_naruto[i].change_to_status_for_fenshen('idle')
             self.list_naruto[i].set_saske(self.saske_style)
             self.naruto_style.change_to_status('idle')
-        for i in range(self.fenshen_num):
-            self.list_naruto[i].character['naruto/螺旋丸'].append_update_function(self.cast_voice_luo_xuan_wan)
         naruto.character["naruto/multi_shadow_separation"].append_end_update_function(self.multi_shadow_separation_end)
         
     def update_yi_ge_fen_shen(self, image_index):
@@ -145,7 +168,7 @@ class Controller():
             naruto.add_to_sprite_group()
             naruto.set_key_controller(self.key_controller)
             naruto.change_to_status('idle')
-            naruto.set_left_padding(self.naruto_style.get_left_padding() + (len(self.list_naruto) + 1) * 170)
+            naruto.set_left_padding(self.naruto_style.get_left_padding() + (len(self.list_naruto) + 1) * 150)
             self.list_naruto.append(naruto)
             naruto.set_top_padding(1000)
         self.lianxufenshen()

@@ -22,6 +22,9 @@ class Color():
 
 class Style():
     
+    def __init__(self):
+        self.speed = 10
+    
     def change_to_status_common(self,status_name):
         self.sprite_group.remove_internal(self.current_sprite)
         self.current_sprite.stop_flush = True

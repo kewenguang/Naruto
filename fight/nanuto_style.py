@@ -38,6 +38,7 @@ class NarutoStyle(Style):
     #situation_flag为3的时候，多重影分身
         
     def __init__(self, sprite_group, situation_flag = 1):
+        super().__init__()
         self.sprite_group = sprite_group
         self.character = {}
         
@@ -147,7 +148,7 @@ class NarutoStyle(Style):
             between_padding = self.saske.get_left_padding() - self.character["naruto/螺旋丸"].get_left_padding()
 
             if between_padding > 65:
-                self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 33)
+                self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + self.speed)
                 self.character["naruto/螺旋丸"].image_index = 14
         elif image_index == 16:
             self.saske.change_to_status('后仰')
@@ -219,6 +220,10 @@ class NarutoStyle(Style):
         elif self.key_controller.key_i:
             self.change_to_status('naruto/')   #这个表现要组装一下
         #我们要对用到的空白多的图片做边缘裁剪，来得到小的图片人物
+    
+    def update_stop_flush(self, image_index):
+        if image_index == 9:
+            self.set_current_sprite_stop_flush()
     
     #专属某一个图集
     def update_run(self, image_index):
