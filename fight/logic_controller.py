@@ -248,6 +248,7 @@ class Controller():
         self.wo_ai_luo = WoailuoStyle(self.sprite_group)
         self.wo_ai_luo.set_left_padding(self.saske_style.get_left_padding() - 600)
         self.wo_ai_luo.change_to_status('出现')
+        self.play_sound('出现.wav')
         self.wo_ai_luo.character['woailuo/出现'].append_end_update_function(self.wo_ai_luo_to_idle)
         
     def end_sa_pu(self):
@@ -266,6 +267,7 @@ class Controller():
         self.wo_ai_luo_sa_pu.set_left_padding(self.saske_style.get_left_padding() - 150)
         self.wo_ai_luo_sa_pu.character['woailuo/沙瀑送葬'].append_end_update_function(self.end_sa_pu)
         self.wo_ai_luo_sa_pu.character['woailuo/沙瀑送葬'].append_update_function(self.sa_pu_update)
+        self.play_sound('沙瀑送葬.wav')
         
     def sa_pu_song_zang(self):
         self.wo_ai_luo.change_to_status('蹲下')
@@ -285,6 +287,14 @@ class Controller():
         self.wo_ai_luo_sa_fu_jiu.remove_current_sprite_from_sprite_group()
         self.wo_ai_luo.change_to_status('idle')
         
+    def play_sa_wo_bao_zha(self, image_index):
+        if image_index == 17:
+            self.play_sound('沙窝爆炸.wav')
+        
+    def sa_fu_jiu_ji_xu(self):
+        self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].clear_update_function()
+        self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].append_update_function(self.play_sa_wo_bao_zha)
+        
     def sa_fu_jiu(self):
         self.wo_ai_luo.change_to_status('举手握拳')
         self.wo_ai_luo.character['woailuo/举手握拳'].append_end_update_function(self.end_update_wo_quan)
@@ -292,6 +302,7 @@ class Controller():
         self.wo_ai_luo_sa_fu_jiu.set_left_padding(self.saske_style.get_left_padding() + 10)
         self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].append_update_function(self.sa_fu_jiu_update)
         self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].append_end_update_function(self.remove_safujiu)
+        self.play_sound('沙子聚集.wav')
     #我爱罗特效##############################################################################################
     
     
@@ -300,13 +311,19 @@ class Controller():
     def ka_ka_xi_to_idle(self):
         self.ka_ka_xi.change_to_status('idle')
         
+    def play_ka_ka_xi_hui_tui(self, image_index):
+        if image_index == 16:
+            self.play_sound('挥拳.wav')
+        
     def add_ka_ka_xi(self):
         self.saske_style.remove_current_sprite_from_sprite_group()
         self.ka_ka_xi = KakaxiStyle(self.sprite_group)
         self.ka_ka_xi.set_left_padding(self.saske_style.get_left_padding())
         self.ka_ka_xi.change_to_status('出现')
+        self.ka_ka_xi.character['kakaxi/出现'].append_update_function(self.play_ka_ka_xi_hui_tui)
         self.ka_ka_xi.character['kakaxi/出现'].append_end_update_function(self.ka_ka_xi_to_idle)
-    
+        self.play_sound('通灵出来的声音.wav')
+        
     def end_update_shui_dun_te_xiao(self):
         self.ka_ka_xi_shui_dun_te_xiao.remove_current_sprite_from_sprite_group()
     
@@ -336,6 +353,7 @@ class Controller():
         self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_update_function(self.shui_long_dan_zhi_shu_update_function)
         self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_end_update_function(self.ka_ka_xi_to_idle)
         self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].append_end_update_function(self.remove_shui_long_dan_zhi_shu)
+        self.play_sound('龙叫.wav')
         self.ka_ka_xi.character['kakaxi/站直'].clear_end_update_function_by_index(0)
     
     def end_update_zhan_zhi(self):
@@ -352,6 +370,7 @@ class Controller():
         self.ka_ka_xi_shou_li_jian.set_left_padding(left_padding)
         self.ka_ka_xi_shou_li_jian.set_top_padding(top_padding)  #手里剑飞到600 400的地方
         self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].append_update_function(self.shou_li_jian_fly)
+        self.play_sound('手里剑空中旋转.wav')
         
     def end_update_shen_wei_reverse(self):
         self.ka_ka_xi_shen_wei_reverse.remove_current_sprite_from_sprite_group()
@@ -377,6 +396,7 @@ class Controller():
                 self.ka_ka_xi_shen_wei_reverse.set_left_padding(self.ka_ka_xi.get_left_padding())
                 self.ka_ka_xi_shen_wei_reverse.set_top_padding(self.ka_ka_xi.get_reverse_top_padding() + 20)
                 self.ka_ka_xi_shen_wei_reverse.character['kakaxi/神威倒序'].append_end_update_function(self.end_update_shen_wei_reverse)
+                self.play_sound('神威.wav')
             else:
                 #这里的手里剑位置变更后面再调
                 self.generate_shou_li_jian(800 + self.shou_li_jian_num * 48, 250 + self.shou_li_jian_num * 36)
@@ -393,6 +413,7 @@ class Controller():
         self.ka_ka_xi_shen_wei.set_left_padding(self.ka_ka_xi.get_left_padding())
         self.ka_ka_xi_shen_wei.set_top_padding(self.ka_ka_xi.get_top_padding() + 20)
         self.ka_ka_xi_shen_wei.character['kakaxi/神威'].append_end_update_function(self.end_update_shen_wei)
+        self.play_sound('神威.wav')
     #神威的特效暂时定为卡卡西通过神威隐身，然后我爱罗被四面八方的手里剑转一圈受伤，最后卡卡西出现在原来的地方
     #卡卡西特效##############################################################################################
     
@@ -408,12 +429,14 @@ class Controller():
         self.zi_lai_ye.set_left_padding(self.naruto_style.get_left_padding())
         self.zi_lai_ye.change_to_status('出现')
         self.zi_lai_ye.character['zilaiye/出现'].append_end_update_function(self.zi_lai_ye_to_idle)
+        self.play_sound('通灵出来的声音.wav')
         
     def hama_to_idle(self):
         self.zi_lai_ye.revert_top_padding()
         self.zi_lai_ye_tong_ling.set_current_sprite_stop_flush()
         self.zi_lai_ye.set_top_padding(self.zi_lai_ye.get_top_padding() - 45)
         self.zi_lai_ye.change_to_status('出现')
+        self.play_sound('通灵出来的声音.wav')
         
     def tong_ling(self):
         self.zi_lai_ye_tong_ling = ZilaiyeStyle(self.sprite_group, situation_flag = 2)
@@ -426,6 +449,7 @@ class Controller():
     def change_to_tong_ling(self):
         self.zi_lai_ye.change_to_status('下蹲通灵')
         self.zi_lai_ye.character['zilaiye/下蹲通灵'].append_end_update_function(self.tong_ling)
+        self.play_sound('通灵出来的声音.wav')
         
     def huo_yan_update_function(self, image_index):
         print('huo yan image_index:' + str(image_index))
@@ -436,7 +460,6 @@ class Controller():
         self.huo_yan.remove_current_sprite_from_sprite_group()
         
     def update_huo_you_function(self, image_index):
-        print('aaaa' + str(image_index))
         if image_index == 1:
             self.huo_yan = ZilaiyeStyle(self.sprite_group, situation_flag = 4)
             self.huo_yan.set_left_padding(self.zi_lai_ye.get_left_padding() + 690)
@@ -448,8 +471,12 @@ class Controller():
         
     def remove_huo_you(self):
         self.zi_lai_ye_huo_you.remove_current_sprite_from_sprite_group()
+        self.zi_lai_ye.change_to_status('idle')
+        self.zi_lai_ye_tong_ling.change_to_status('蛤蟆出现')
+        self.zi_lai_ye_tong_ling.set_current_sprite_stop_flush()
         
     def show_fier(self):
+        self.play_sound('喷火.wav')
         self.zi_lai_ye_tong_ling.set_current_sprite_stop_flush()
         self.zi_lai_ye_huo_you = ZilaiyeStyle(self.sprite_group, situation_flag = 3)
         self.zi_lai_ye_huo_you.set_left_padding(self.zi_lai_ye.get_left_padding() + 105)
@@ -478,7 +505,7 @@ class Controller():
         self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星的爆炸')
         self.pain_di_bao_tian_xing_qiu.set_top_padding(350)
         self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的爆炸'].append_end_update_function(self.remove_bao_zha) 
-    
+        self.play_sound('爆炸.wav')
     #def end_chu_xian_ge_qiu(self):
     #    self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星旋转')
     #    self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星旋转'].append_end_update_function(self.di_bao_tian_xing_bao_zha) 
@@ -490,6 +517,7 @@ class Controller():
         self.pain_di_bao_tian_xing_qiu.set_top_padding(400)
         self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].append_end_update_function(self.di_bao_tian_xing_bao_zha)
         self.update_screen = self.update_screen_with_white
+        self.play_sound('石头聚集.wav')
     
     def draw_screen_with_black(self):
         self.screen.fill(Color.BLACK)
@@ -501,14 +529,17 @@ class Controller():
         self.pain_di_bao_tian_xing_lun_hui_yan.set_top_padding(250)
         self.pain_di_bao_tian_xing_lun_hui_yan.character['pain/轮回眼打开'].append_end_update_function(self.chu_xian_ge_qiu)
         self.update_screen = self.draw_screen_with_black
+        self.play_sound('轮回眼.wav')
         
     def release_di_bao_tian_xing(self):
         self.pain.change_to_status('地爆天星结印')
         self.pain.character['pain/地爆天星结印'].append_end_update_function(self.end_di_bao_tian_xing_jie_ying)
+        self.play_sound('拍巴掌.wav')
         
     def pain_to_liu_dao_san(self):
         self.pain.change_to_status('六道散')
         self.pain.character['pain/六道散'].append_end_update_function(self.pain_to_idle)
+        self.play_sound('六道散.wav')
         
     def add_pain(self):
         self.saske_style.remove_current_sprite_from_sprite_group()
@@ -517,6 +548,7 @@ class Controller():
         self.pain.set_top_padding(self.saske_style.get_top_padding())
         self.pain.change_to_status('出场')
         self.pain.character['pain/出场'].append_end_update_function(self.pain_to_liu_dao_san)
+        self.play_sound('通灵出来的声音.wav')
         
     def xi_zhu_zi_lai_ye(self):
         self.pain.change_to_status('地爆天星举手')
@@ -537,21 +569,23 @@ class Controller():
         if self.key_controller.key_m:
             self.chu_fa_fen_shen()
         elif self.key_controller.key_w:
-            self.xie_lun_yan()
+            #self.xie_lun_yan()
             #self.sa_pu_song_zang()
             #self.sa_fu_jiu()
             #self.shui_long_dan_zhi_shu()
             #self.shen_wei()
             #self.change_to_tong_ling()
-            #self.release_di_bao_tian_xing()
+            self.release_di_bao_tian_xing()
         elif self.key_controller.key_a:
             #self.add_wo_ai_luo()
+            #self.add_ka_ka_xi()
             #self.add_zi_lai_ye()
-            #self.add_pain()
-            self.test_cast_sound()
+            self.add_pain()
+            #self.test_cast_sound()
         elif self.key_controller.key_s:
             #self.change_to_status('naruto/idle')
-            #self.wo_ai_luo_sa_fu_jiu.character['woailuo/砂缚柩'].clear_update_function()
+            #self.sa_fu_jiu_ji_xu()
+            
             #self.begin_fire()
             self.xi_zhu_zi_lai_ye()
     
@@ -611,7 +645,7 @@ class Controller():
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
             self.handle_key_event()
-            #return True
+            return True
             if self.insert_action_num == 0 and self.sleep(1000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
