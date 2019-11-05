@@ -15,19 +15,32 @@ from fight.resource_load import Color
 from fight import saske_style
 
 class Controller():
-    def __init__(self, sprite_group):
-        self.naruto_style = NarutoStyle(sprite_group)
-        self.saske_style = SaskeStyle(sprite_group)
+    def __init__(self, sprite_group, image, mixer):
         self.sprite_group = sprite_group
+        self.image = image
+        self.mixer = mixer
+        self.init_mixer()
+        
+        self.feng_mian()
+        
         self.current_attack_player = "naruto"
         self.current_attacked_player = 'saske'
         #self.t = time.time()
         self.flush_time = 0 #int(round(self.t * 1000))
-        self.update_function = self.start
+        self.update_function = self.feng_mian_handle_key_event
+        self.play_music('游戏开始的音乐.wav')
         self.insert_action_num = 0
         
         self.test_flag = True
-        self.update_screen = self.update_screen_with_white
+        
+        self.update_screen = self.update_backgroud
+        
+    def feng_mian_handle_key_event(self):
+        if self.key_controller.key_a:
+            self.update_function = self.start
+            self.naruto_style = NarutoStyle(self.sprite_group)
+            self.saske_style = SaskeStyle(self.sprite_group)
+            self.ready()
         
     def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
@@ -36,11 +49,10 @@ class Controller():
         for i in range(len(self.list_naruto)):
             self.sprite_group.remove_internal(self.list_naruto[i])
         
-    def set_mixer(self, mixer):
-        self.mixer = mixer
-        self.channel2 = mixer.Channel(2)
-        self.channel3 = mixer.Channel(3)
-        self.channel4 = mixer.Channel(4)
+    def init_mixer(self):
+        self.channel2 = self.mixer.Channel(2)
+        self.channel3 = self.mixer.Channel(3)
+        self.channel4 = self.mixer.Channel(4)
     
     def play_music(self, url):
         self.mixer.music.load('../assets/bgm/' + url)
@@ -724,6 +736,13 @@ class Controller():
         self.saske_style.change_to_status("idle")
         self.start_to_update()
         #self.saske_style. redress_left_padding()
+        
+    def feng_mian(self):
+        self.background = self.image.load(r"../assets/background_pictrue/封面.jpg")
+        
+        
+    def update_backgroud(self):
+        self.screen.blit(self.background,(0,0))
         
     def start(self):
         if self.naruto_style.status == 'idle' and self.saske_style.status == 'idle':

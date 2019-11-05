@@ -371,11 +371,28 @@ output_dir = prefix_dir + '佩恩/整理后的出场'
 def resize_pic():
     for filename in os.listdir(input_dir):
         img = Image.open(input_dir + "/" + filename)
-        out = img.resize((int(img.size[0]*3), int(img.size[1]*3)), Image.ANTIALIAS)
+        out = img.resize((int(1200), int(600)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
 
 #resize_pic()
 #sys.exit()
+
+from PIL import ImageDraw, ImageFont
+def add_text():
+    img = Image.open(input_dir + '/封面.jpg')
+    font = ImageFont.truetype('C:/windows/fonts/Dengl.ttf', 30)
+    draw = ImageDraw.Draw(img)
+    fill_color = '#ffffff'
+    position = (450, 62)
+    draw.text(position, '语音玩法和手势玩法', font=font, fill=fill_color, spacing=0, align='left')
+    position = (542, 110)
+    draw.text(position, '&&', font=font, fill=fill_color, spacing=0, align='left')
+    position = (504, 150)
+    draw.text(position, 'IP类游戏', font=font, fill=fill_color, spacing=0, align='left')
+    img.save(output_dir + '/封面.jpg')
+
+add_text()
+sys.exit()
 
 def get_center_pixel():
     width = 720 - 317

@@ -32,11 +32,10 @@ all_sprites = pygame.sprite.Group()
 
 #all_sprites.has_internal(sprite)
 
-logic_controller = Controller(all_sprites)
+logic_controller = Controller(all_sprites, pygame.image, pygame.mixer)
 logic_controller.set_key_controller(key_controller)
 logic_controller.set_screen(screen)
 #logic_controller.set_sprite_group(all_sprites)
-logic_controller.ready()
 
 running = True
 
@@ -44,7 +43,6 @@ running = True
 pygame.mixer.init()
 #pygame.mixer.music.load('../assets/bgm/游戏开始的音乐.mp3')
 #pygame.mixer.music.play(-1, 0) #第一个参数是播放次数，-1会导致循环播放  第二个参数表示第几秒开始播放
-logic_controller.set_mixer(pygame.mixer)
 #pygame.mixer.music.stop()
 
 #播放音效
