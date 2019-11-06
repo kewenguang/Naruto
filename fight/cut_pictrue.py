@@ -106,7 +106,26 @@ def add_pic_to_center():
                 img_white.putpixel((start_left + i, start_top +j), (data[0], data[1], data[2], data[3]))
         img_white.save(output_dir + "/" + filename)
         
-#add_pic_to_center()
+one_pic = prefix_dir + '背景资源/images/4.png'
+another_pic = prefix_dir + '背景资源/images/1.png'
+output_dir =  prefix_dir + '背景资源/images/'
+def add_pic_to_center_down():
+    img_one = Image.open(one_pic)
+    img_another = Image.open(another_pic)
+    
+    img_another = img_another.resize((img_one.size[0], img_one.size[1]), Image.ANTIALIAS)
+    
+    start_left = int(img_another.size[0]/2) - int(img_another.size[0]/2)
+    start_top = int(img_another.size[1]) - int(img_one.size[1])
+    top_left_data = img_one.getpixel((0, 0))
+    for i in range(img_one.size[0]):
+        for j in range(img_one.size[1]):
+            data = img_one.getpixel((i, j))
+            if data[0] == top_left_data[0] and data[1] == top_left_data[1] and data[2] == top_left_data[2] and data[3] == top_left_data[3]:
+                continue
+            img_another.putpixel((start_left + i, start_top +j), (data[0], data[1], data[2], data[3]))
+    img_another.save(output_dir + "/游戏背景.jpg")
+#add_pic_to_center_down()
 #sys.exit()
 
 def change_pic_color_in_width():
@@ -391,8 +410,8 @@ def add_text():
     draw.text(position, 'IP类游戏', font=font, fill=fill_color, spacing=0, align='left')
     img.save(output_dir + '/封面.jpg')
 
-add_text()
-sys.exit()
+#add_text()
+#sys.exit()
 
 def get_center_pixel():
     width = 720 - 317

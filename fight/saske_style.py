@@ -8,7 +8,7 @@ from fight.resource_load import Style
 
 class SaskeStyle(Style):
     def hou_yang_end_update_handle(self):
-        self.change_to_status('idle')
+        self.only_change_to_idle()
     
     def saske_status_to_qilai(self):
         self.change_to_status('站起来')
@@ -93,6 +93,15 @@ class SaskeStyle(Style):
         self.current_sprite.stop_flush = False
         self.fall_down_interval = 0
     
+    def only_change_to_hou_yang(self):
+        Style.change_to_status(self, 'saske/后仰')
+        self.status = '后仰'
+        
+    def only_change_to_idle(self):
+        Style.change_to_status(self, 'saske/idle')
+        self.status = 'idle'
+        #self.remove_original_just_show('saske/后仰')
+        #self.status = '后仰'
     
     def change_to_houyang(self):
         if not self.status == '后仰':
@@ -150,7 +159,7 @@ class SaskeStyle(Style):
         images_num = self.character["saske/倒在地上"].get_image_num()
         current_left_padding = self.character["saske/倒在地上"].get_left_padding()
         current_top_padding = self.character["saske/倒在地上"].get_top_padding()
-        being_left_padding = current_left_padding + 35
+        being_left_padding = current_left_padding + 55
         being_top_padding = current_top_padding + (image_index*2 - images_num)*4
         self.character["saske/倒在地上"].set_left_padding(being_left_padding)  
         self.character["saske/倒在地上"].set_top_padding(being_top_padding)  

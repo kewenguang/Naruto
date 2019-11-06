@@ -33,6 +33,7 @@ class Controller():
         
         self.test_flag = True
         
+        self.casting_si_sha_flag = False
         self.update_screen = self.update_backgroud
         
     def feng_mian_handle_key_event(self):
@@ -41,7 +42,9 @@ class Controller():
             self.naruto_style = NarutoStyle(self.sprite_group)
             self.saske_style = SaskeStyle(self.sprite_group)
             self.ready()
-        
+            self.zhan_dou_chang_jing()
+            self.play_music('pubu.mp3')
+            
     def set_sprite_group(self, sprite_group):
         self.sprite_group = sprite_group
         
@@ -657,12 +660,14 @@ class Controller():
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
             self.handle_key_event()
-            return True
+            #return True
             if self.insert_action_num == 0 and self.sleep(1000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
                 self.saske_style.change_to_status('run')
-
+                if not self.casting_si_sha_flag:
+                    self.play_music('双方厮杀.mp3')
+                    self.casting_si_sha_flag = True
         return False
     
     def play_yong_tou_da(self, image_index):  #其实这些声音应该挂在具体的玩家身上
@@ -681,11 +686,11 @@ class Controller():
         if not self.idle_begin_run() and self.naruto_style.status == 'run' and self.saske_style.status == 'run':
             #首先跑一下看看是不是idle3秒之后开始相对跑近     然后下面需要判断一下是不是距离足够进了
             #print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
-            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 84:
+            if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 117:
                 self.play_sound('挥拳.wav')
                 self.naruto_style.change_to_status('挥拳')
-                self.naruto_style.append_end_update_huiquan(self.saske_style.change_to_houyang())
-                self.naruto_style.append_end_update_yongtouda(self.saske_style.change_to_houyang())
+                self.naruto_style.append_end_update_huiquan(self.saske_style.only_change_to_hou_yang)
+                self.naruto_style.append_end_update_yongtouda(self.saske_style.only_change_to_hou_yang)
                 self.naruto_style.append_end_update_fanjiaoti(self.saske_be_hit_far_away)
                 
                 self.naruto_style.character["naruto/用头打"].append_update_function(self.play_yong_tou_da)
@@ -740,6 +745,8 @@ class Controller():
     def feng_mian(self):
         self.background = self.image.load(r"../assets/background_pictrue/封面.jpg")
         
+    def zhan_dou_chang_jing(self):
+        self.background = self.image.load(r"../assets/background_pictrue/游戏背景.jpg")
         
     def update_backgroud(self):
         self.screen.blit(self.background,(0,0))

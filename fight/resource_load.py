@@ -50,11 +50,21 @@ class Style():
         self.current_sprite.stop_flush = True
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
         self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
+        self.character[status_name].image_index = 0
         #self.sprite_group.remove_internal(self.current_sprite)
         self.current_sprite.set_top_padding(1000)
         self.current_sprite = self.character[status_name]
         self.current_sprite.stop_flush = False
     
+    def remove_original_just_show(self, status_name):
+        self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
+        self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
+        self.character[status_name].image_index = 0
+        self.sprite_group.remove_internal(self.current_sprite)
+        self.current_sprite = self.character[status_name]
+        self.current_sprite.stop_flush = False
+        self.sprite_group.add(self.current_sprite)
+        
     def revert_top_padding(self):
         self.current_sprite.set_top_padding(GameCommonData.character_level)
         
@@ -110,7 +120,7 @@ class GameCommonData():
     WIDTH = 1200
     HEIGHT = 600
     
-    character_level = HEIGHT - 50
+    character_level = HEIGHT - 60
     left_character_padding = 120
     
     #游戏人物可移动的左右边界情况
