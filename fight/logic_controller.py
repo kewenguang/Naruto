@@ -714,15 +714,19 @@ class Controller():
         if image_index == 3:
             self.play_sound('打得重.wav')
             
+    def start_casting_ninjutsu(self):
+        self.update_function = self.handle_key_event
+            
     def saske_attack_naruto(self):
         if not self.idle_begin_run() and self.naruto_style.status == 'run' and self.saske_style.status == 'run':
             #print('padding:' + str(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()))
             if(self.saske_style.get_left_padding() - self.naruto_style.get_left_padding()) < 52:
-                self.naruto_style.change_to_status('idle')
+                self.naruto_style.change_to_status_idle()
                 self.saske_style.change_to_status('挥刀')
                 self.saske_style.append_update_huidao(self.naruto_be_houyang_with_image_index)
                 self.saske_style.append_end_update_huiquan(self.naruto_be_houyang)
                 self.saske_style.append_update_huiliangdao(self.naruto_be_houyang_with_image_index)
+                self.saske_style.character['saske/挥两刀'].append_end_update_function(self.start_casting_ninjutsu)
                 self.saske_style.append_end_update_up_ti(self.naruto_be_hit_far_away)
                 self.saske_style.character['saske/挥刀'].append_update_function(self.cast_dao_kan)
                 self.saske_style.character['saske/挥拳'].append_update_function(self.cast_hui_quan)

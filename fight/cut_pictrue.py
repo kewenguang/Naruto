@@ -393,8 +393,25 @@ def resize_pic():
         out = img.resize((int(1200), int(600)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
 
-#resize_pic()
-#sys.exit()
+def cut_top_pic():
+    img_white = Image.open(input_dir + "/39.png")
+    img_white = img_white.crop((0, 0, img_white.size[0], img_white.size[1] - 15))
+    for i in range(img_white.size[0]):
+        for j in range(img_white.size[1]):
+            img_white.putpixel((i, j), (255, 255, 255, 255))
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        data_left_top = img.getpixel((0, 0))
+        img_copy = img_white.copy()
+        for i in range(img_white.size[0]):
+            for j in range(img_white.size[1]):
+                data = img.getpixel((i, j + 15))
+                if data_left_top[0] == data[0] and data_left_top[1] == data[1] and data_left_top[2] == data[2] and data_left_top[3] == data[3]:
+                    continue
+                img_copy.putpixel((i, j), (data[0], data[1], data[2], data[3]))
+        img_copy.save(output_dir + "/" + filename)
+cut_top_pic()
+sys.exit()
 
 from PIL import ImageDraw, ImageFont
 def add_text():

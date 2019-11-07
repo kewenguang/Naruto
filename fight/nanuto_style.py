@@ -9,7 +9,7 @@ from fight.resource_load import Style
 class NarutoStyle(Style):
     
     def hou_yang_end_update_handle(self):
-        self.change_to_status('idle')
+        self.change_to_idle()
         
     def naruto_status_to_qilai(self):
         self.change_to_status('翻身起来')
@@ -60,7 +60,7 @@ class NarutoStyle(Style):
         if situation_flag == 1:
             naruto_image_url = ["naruto/multi_shadow_separation", "naruto/idle", "naruto/death", "naruto/run", "naruto/挥拳"
                             , "naruto/用头打", "naruto/反脚踢", "naruto/后仰", "naruto/翻身起来", "naruto/色诱之术", "naruto/一个分身",
-                            "naruto/结印"]
+                            "naruto/结印", "naruto/完整跳"]
         elif situation_flag == 2:
             naruto_image_url = ["naruto/结印", "naruto/一个分身", "naruto/idle", "naruto/螺旋丸"]
         elif situation_flag == 3:
@@ -81,7 +81,7 @@ class NarutoStyle(Style):
             self.character["naruto/挥拳"].set_frame_rate(8)
             self.character["naruto/用头打"].append_end_update_function(self.naruto_status_to_fanjiaoti)
             self.character["naruto/用头打"].set_frame_rate(8)
-            self.character["naruto/反脚踢"].append_end_update_function(self.naruto_status_to_idle)
+            self.character["naruto/反脚踢"].append_end_update_function(self.change_to_idle)
             
             self.character["naruto/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
             self.character["naruto/后仰"].set_frame_rate(8)
@@ -89,11 +89,15 @@ class NarutoStyle(Style):
             self.character["naruto/death"].append_update_function(self.update_fall_down) 
             self.character["naruto/death"].append_end_update_function(self.naruto_status_to_qilai) 
             
-            self.character["naruto/翻身起来"].append_end_update_function(self.naruto_status_to_idle) 
+            self.character["naruto/翻身起来"].append_end_update_function(self.change_to_idle) 
             self.character["naruto/翻身起来"].set_frame_rate(8)
             
             self.character["naruto/色诱之术"].set_frame_rate(7)
         
+            self.character["naruto/完整跳"].append_end_update_function(#self.change_to_idle) 
+            self.character["naruto/完整跳"].append_update_function(#)
+            self.character["naruto/翻身起来"].set_frame_rate(8)
+            
         if situation_flag == 2:
             self.character["naruto/螺旋丸"].set_frame_rate(11)
             self.character["naruto/螺旋丸"].append_update_function(self.luoxuanwan_update_set_leftpadding)
@@ -153,7 +157,9 @@ class NarutoStyle(Style):
         elif image_index == 16:
             self.saske.change_to_status('后仰')
     
-
+    def change_to_idle(self):
+        Style.change_to_status(self, 'naruto/idle')
+        self.status = 'idle'
     
     def change_to_status_for_fenshen(self, status):
         if status == 'idle':
@@ -203,6 +209,9 @@ class NarutoStyle(Style):
             Style.change_to_status(self, 'naruto/螺旋丸')
             self.character["naruto/螺旋丸"].set_left_padding(self.character["naruto/螺旋丸"].get_left_padding() + 17)
             self.status = '螺旋丸'
+        elif status == '完整跳':
+            Style.change_to_status(self, 'naruto/完整跳')
+            self.status = '完整跳'
             
     def update(self):
         if self.key_controller.key_d:
