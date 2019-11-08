@@ -51,10 +51,14 @@ class Style():
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())
         self.character[status_name].set_top_padding(self.current_sprite.get_top_padding())
         self.character[status_name].image_index = 0
-        #self.sprite_group.remove_internal(self.current_sprite)
         self.current_sprite.set_top_padding(1000)
         self.current_sprite = self.character[status_name]
         self.current_sprite.stop_flush = False
+    
+    def add_hide_sprite(self, status_name):
+        self.character[status_name].stop_flush = True
+        self.character[status_name].set_top_padding(1000)
+        self.sprite_group.add(self.character[status_name])
     
     def remove_original_just_show(self, status_name):
         self.character[status_name].set_left_padding(self.current_sprite.get_left_padding())

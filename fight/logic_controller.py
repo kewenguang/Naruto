@@ -13,6 +13,7 @@ from fight.zilaiye_style import ZilaiyeStyle
 from fight.pain_style import PainStyle
 from fight.resource_load import Color
 from fight import saske_style
+from scipy import character
 
 class Controller():
     def __init__(self, sprite_group, image, mixer):
@@ -35,6 +36,8 @@ class Controller():
         
         self.casting_si_sha_flag = False
         self.update_screen = self.update_backgroud
+        
+        self.command_index = 0
         
     def feng_mian_handle_key_event(self):
         if self.key_controller.key_a:
@@ -137,9 +140,15 @@ class Controller():
         if image_index != 0 and image_index < 51 and image_index%5 == 0:
             self.play_sound('yun_beng.wav')
         
+    def change_to_idle_when_fen_shen(self):
+        self.saske_style.change_to_status_with_no_remove_origin('saske/idle')
+        self.saske_style.status = 'idle'
+        
     def end_update_fenshen(self):
         print("6个放完了，接下来是多重影分身")
-        
+        self.saske_style.add_hide_sprite('saske/后仰')
+        self.saske_style.character['saske/后仰'].clear_end_update_function()
+        self.saske_style.character['saske/后仰'].append_end_update_function(self.change_to_idle_when_fen_shen)
         naruto = NarutoStyle(self.sprite_group, situation_flag = 3)
         naruto.add_to_sprite_group()
         naruto.set_key_controller(self.key_controller)
@@ -153,7 +162,7 @@ class Controller():
             self.list_naruto[i].change_to_status_for_fenshen('idle')
             self.list_naruto[i].set_saske(self.saske_style)
             self.naruto_style.change_to_status('idle')
-        naruto.character["naruto/multi_shadow_separation"].append_end_update_function(self.multi_shadow_separation_end)
+        #naruto.character["naruto/multi_shadow_separation"].append_end_update_function(self.multi_shadow_separation_end)
         
     def update_yi_ge_fen_shen(self, image_index):
         if image_index == 4:
@@ -194,7 +203,7 @@ class Controller():
             naruto.add_to_sprite_group()
             naruto.set_key_controller(self.key_controller)
             naruto.change_to_status('idle')
-            naruto.set_left_padding(self.naruto_style.get_left_padding() + (len(self.list_naruto) + 1) * 150)
+            naruto.set_left_padding(self.naruto_style.get_left_padding() + (len(self.list_naruto) + 1) * 165)
             self.list_naruto.append(naruto)
             naruto.set_top_padding(1000)
         self.lianxufenshen()
@@ -209,11 +218,14 @@ class Controller():
     
     
     #佐助特效##############################################################################################
+    
     def xuzuo_jian_update(self, image_index):
         left_padding = self.saske_xuzuo_jian.character['saske/须左的箭'].get_left_padding()
         if left_padding - self.naruto_style.get_left_padding() < 30:
             self.saske_xuzuo_jian.remove_current_sprite_from_sprite_group()
             self.naruto_style.change_to_status('death')
+            self.naruto_style.character['naruto/death'].clear_end_update_function()
+            self.naruto_style.character['naruto/death'].append_end_update_function(self.naruto_style.remove_current_sprite_from_sprite_group)
             self.saske_xuzuo.character['saske/须左'].clear_update_function()
             #self.play_sound('打中别人.wav') #须左结束的时候也放一下音效
             self.play_sound('须左消失.wav')
@@ -260,6 +272,7 @@ class Controller():
         self.wo_ai_luo.change_to_status('idle')
         
     def add_wo_ai_luo(self):
+        print('我爱罗上场')
         self.wo_ai_luo = WoailuoStyle(self.sprite_group)
         self.wo_ai_luo.set_left_padding(self.saske_style.get_left_padding() - 600)
         self.wo_ai_luo.change_to_status('出现')
@@ -331,7 +344,7 @@ class Controller():
             self.play_sound('挥拳.wav')
         
     def add_ka_ka_xi(self):
-        self.saske_style.remove_current_sprite_from_sprite_group()
+        #self.saske_style.remove_current_sprite_from_sprite_group()
         self.ka_ka_xi = KakaxiStyle(self.sprite_group)
         self.ka_ka_xi.set_left_padding(self.saske_style.get_left_padding())
         self.ka_ka_xi.change_to_status('出现')
@@ -439,7 +452,7 @@ class Controller():
         self.zi_lai_ye.change_to_status('idle')
         
     def add_zi_lai_ye(self):
-        self.naruto_style.remove_current_sprite_from_sprite_group()
+        #self.naruto_style.remove_current_sprite_from_sprite_group()
         self.zi_lai_ye = ZilaiyeStyle(self.sprite_group)
         self.zi_lai_ye.set_left_padding(self.naruto_style.get_left_padding())
         self.zi_lai_ye.change_to_status('出现')
@@ -557,7 +570,7 @@ class Controller():
         self.play_sound('六道散.wav')
         
     def add_pain(self):
-        self.saske_style.remove_current_sprite_from_sprite_group()
+        #self.saske_style.remove_current_sprite_from_sprite_group()
         self.pain = PainStyle(self.sprite_group)
         self.pain.set_left_padding(self.saske_style.get_left_padding())
         self.pain.set_top_padding(self.saske_style.get_top_padding())
@@ -580,29 +593,52 @@ class Controller():
     def update_screen_with_white(self):
         self.screen.fill(Color.WHITE)
     
+    #几个问题  水龙的位置太远了，在我爱罗哪里消失      四个分镖时间太长 ，且没打中     自来也出现在很远的地方   我爱罗没消失  卡卡西没消失  佩恩不停举手
+    
     def handle_key_event(self):
-        if self.key_controller.key_m:
-            self.chu_fa_fen_shen()
+        #if self.key_controller.key_m:
+        if self.key_controller.key_a:
+            if self.command_index == 0:
+                self.chu_fa_fen_shen()
+            elif self.command_index == 1:
+                self.multi_shadow_separation_end()
+            elif self.command_index == 2:
+                self.xie_lun_yan()
+            elif self.command_index == 3:
+                self.add_wo_ai_luo()
+            elif self.command_index == 4:
+                self.sa_pu_song_zang()
+            elif self.command_index == 5:
+                self.sa_fu_jiu()
+            elif self.command_index == 6:
+                self.sa_fu_jiu_ji_xu()
+            elif self.command_index == 7:
+                self.add_ka_ka_xi()
+            elif self.command_index == 8:
+                self.shui_long_dan_zhi_shu()
+            elif self.command_index == 9:
+                self.shen_wei()
+            elif self.command_index == 10:
+                self.add_zi_lai_ye()
+            elif self.command_index == 11:
+                self.change_to_tong_ling()
+            elif self.command_index == 12:
+                self.begin_fire()
+            elif self.command_index == 13:
+                self.add_pain()
+            elif self.command_index == 14:
+                self.xi_zhu_zi_lai_ye()
+            print('self.command_index:' + str(self.command_index))
+            self.command_index = self.command_index + 1
+        '''
         elif self.key_controller.key_w:
-            #self.xie_lun_yan()
-            #self.sa_pu_song_zang()
-            #self.sa_fu_jiu()
-            #self.shui_long_dan_zhi_shu()
-            #self.shen_wei()
-            #self.change_to_tong_ling()
             self.release_di_bao_tian_xing()
         elif self.key_controller.key_a:
-            #self.add_wo_ai_luo()
-            #self.add_ka_ka_xi()
-            #self.add_zi_lai_ye()
             self.add_pain()
             #self.test_cast_sound()
         elif self.key_controller.key_s:
             #self.change_to_status('naruto/idle')
-            #self.sa_fu_jiu_ji_xu()
-            
-            #self.begin_fire()
-            self.xi_zhu_zi_lai_ye()
+            self.xi_zhu_zi_lai_ye()'''
     
     def set_key_controller(self, key_controller):
         self.key_controller = key_controller
@@ -626,6 +662,8 @@ class Controller():
         self.naruto_style.set_key_controller(self.key_controller)
         self.saske_style.add_to_sprite_group()
         self.saske_style.set_key_controller(self.key_controller)
+        self.naruto_style.character['naruto/death'].append_update_function(self.cast_dao_di_voice)
+        self.saske_style.character['saske/倒在地上'].append_update_function(self.cast_dao_di_voice)
     
     def cast_dao_di_voice(self, image_index):
         if image_index == 7:
@@ -635,13 +673,12 @@ class Controller():
         self.saske_style.change_to_status('倒在地上')
         self.current_attack_player = 'saske'
         self.current_attacked_player = 'naruto'
-        self.saske_style.character['saske/倒在地上'].append_update_function(self.cast_dao_di_voice)
-    
+        
     def naruto_be_hit_far_away(self):
         self.naruto_style.change_to_status('death')
         self.current_attack_player = 'naruto'
         self.current_attacked_player = 'saske'
-        self.naruto_style.character['naruto/death'].append_update_function(self.cast_dao_di_voice)
+        
         
     def naruto_be_houyang(self):
         self.naruto_style.change_to_status('后仰')
@@ -659,8 +696,13 @@ class Controller():
             #这里要跳过3秒的帧数   resource_load里面有一个fixed_flush函数  我们要想办法把它抽成一个共有的类
             #需要用到跳帧的类可以声明一个这样的对象，这样子就可以Sleep(3000)来实现跳帧,里面会记录下来，再次执行到这里不会追加Sleep时间
             #self.saske_style.change_to_status('站起来')
-            self.handle_key_event()
-            #return True
+            
+            #为了测试先让它等于这个
+            self.update_function = self.handle_key_event
+            
+            #为了测试先注释掉
+            #self.handle_key_event()
+            return True
             if self.insert_action_num == 0 and self.sleep(1000):
                 #self.saske_style.change_to_status('站起来')
                 self.naruto_style.change_to_status('run')
@@ -714,8 +756,25 @@ class Controller():
         if image_index == 3:
             self.play_sound('打得重.wav')
             
+    def naruto_casting_tiao_dao_ban_zi_shang(self, image_index):
+        if image_index == 9:
+            self.play_sound('踩到木板.wav')
+            
+    def saske_casting_tiao_dao_ban_zi_shang(self, image_index):
+        if image_index == 7:
+            self.play_sound('踩到木板.wav')
+            
+    def wan_zheng_tiao(self):
+        self.naruto_style.change_to_status('完整跳')
+        self.saske_style.change_to_status('完整跳')
+        self.play_sound('跳跃.wav')
+            
     def start_casting_ninjutsu(self):
         self.update_function = self.handle_key_event
+        self.naruto_style.character["naruto/翻身起来"].append_end_update_function(self.wan_zheng_tiao)
+        self.naruto_style.character["naruto/完整跳"].append_update_function(self.naruto_casting_tiao_dao_ban_zi_shang)
+        self.saske_style.character["saske/完整跳"].append_update_function(self.saske_casting_tiao_dao_ban_zi_shang)
+        
             
     def saske_attack_naruto(self):
         if not self.idle_begin_run() and self.naruto_style.status == 'run' and self.saske_style.status == 'run':
@@ -726,7 +785,7 @@ class Controller():
                 self.saske_style.append_update_huidao(self.naruto_be_houyang_with_image_index)
                 self.saske_style.append_end_update_huiquan(self.naruto_be_houyang)
                 self.saske_style.append_update_huiliangdao(self.naruto_be_houyang_with_image_index)
-                self.saske_style.character['saske/挥两刀'].append_end_update_function(self.start_casting_ninjutsu)
+                self.naruto_style.character['naruto/death'].append_end_update_function(self.start_casting_ninjutsu)
                 self.saske_style.append_end_update_up_ti(self.naruto_be_hit_far_away)
                 self.saske_style.character['saske/挥刀'].append_update_function(self.cast_dao_kan)
                 self.saske_style.character['saske/挥拳'].append_update_function(self.cast_hui_quan)

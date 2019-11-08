@@ -32,6 +32,14 @@ class NarutoStyle(Style):
     def append_jieyin_end_func(self, func):
         self.character["naruto/结印"].append_end_update_function(func) 
         
+    def tiao_hui_qu(self, image_index):
+        images_num = self.character["naruto/完整跳"].get_image_num()
+        current_left_padding = self.character["naruto/完整跳"].get_left_padding()
+        current_top_padding = self.character["naruto/完整跳"].get_top_padding()
+        being_left_padding = current_left_padding - 35
+        being_top_padding = current_top_padding + (image_index*2 - images_num)*4
+        self.character["naruto/完整跳"].set_left_padding(being_left_padding)  
+        self.character["naruto/完整跳"].set_top_padding(being_top_padding)  
     
     #situation_flag为1的时候，正常的鸣人
     #situation_flag为2的时候，单个分身的鸣人
@@ -89,14 +97,14 @@ class NarutoStyle(Style):
             self.character["naruto/death"].append_update_function(self.update_fall_down) 
             self.character["naruto/death"].append_end_update_function(self.naruto_status_to_qilai) 
             
-            self.character["naruto/翻身起来"].append_end_update_function(self.change_to_idle) 
+            #elf.character["naruto/翻身起来"].append_end_update_function(self.change_to_idle) 
             self.character["naruto/翻身起来"].set_frame_rate(8)
             
             self.character["naruto/色诱之术"].set_frame_rate(7)
         
-            self.character["naruto/完整跳"].append_end_update_function(#self.change_to_idle) 
-            self.character["naruto/完整跳"].append_update_function(#)
-            self.character["naruto/翻身起来"].set_frame_rate(8)
+            self.character["naruto/完整跳"].append_end_update_function(self.change_to_idle)
+            self.character["naruto/完整跳"].append_update_function(self.tiao_hui_qu)
+            self.character["naruto/完整跳"].set_frame_rate(8)
             
         if situation_flag == 2:
             self.character["naruto/螺旋丸"].set_frame_rate(11)

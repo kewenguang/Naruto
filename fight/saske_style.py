@@ -25,6 +25,15 @@ class SaskeStyle(Style):
     def saske_status_to_up_ti(self):
         self.change_to_status('向上一脚')
         
+    def tiao_hui_qu(self, image_index):
+        images_num = self.character["saske/完整跳"].get_image_num()
+        current_left_padding = self.character["saske/完整跳"].get_left_padding()
+        current_top_padding = self.character["saske/完整跳"].get_top_padding()
+        being_left_padding = current_left_padding + 35
+        being_top_padding = current_top_padding + (image_index*2 - images_num)*4
+        self.character["saske/完整跳"].set_left_padding(being_left_padding)  
+        self.character["saske/完整跳"].set_top_padding(being_top_padding)  
+        
     def __init__(self, sprite_group, situation_flag = 1):
         self.sprite_group = sprite_group
         self.character = {}
@@ -33,7 +42,7 @@ class SaskeStyle(Style):
                                 'saske/挥两刀', 'saske/挥拳',
                                 'saske/向上一脚', 'saske/idle',
                                 'saske/run','saske/后仰', 'saske/站起来',
-                                'saske/开篇挥手']
+                                'saske/开篇挥手', 'saske/完整跳']
         elif situation_flag == 2:
             saske_image_url = ['saske/须左']
         elif situation_flag == 3:
@@ -53,6 +62,10 @@ class SaskeStyle(Style):
             self.character["saske/站起来"].append_end_update_function(self.saske_status_to_idle)
             self.character["saske/站起来"].set_frame_rate(8)
             
+            self.character["saske/完整跳"].append_end_update_function(self.saske_status_to_idle)
+            self.character["saske/完整跳"].append_update_function(self.tiao_hui_qu)
+            self.character["saske/完整跳"].set_frame_rate(8)
+            
             self.character["saske/挥刀"].append_end_update_function(self.saske_status_to_huiquan)
             self.character["saske/挥刀"].set_frame_rate(8)
             self.character["saske/挥拳"].append_end_update_function(self.saske_status_to_huiliangdao)
@@ -68,6 +81,8 @@ class SaskeStyle(Style):
             self.character["saske/后仰"].set_top_padding(1000)
             self.character["saske/后仰"].append_end_update_function(self.hou_yang_end_update_handle)
             self.character["saske/后仰"].set_frame_rate(8)
+        
+           
         
             #self.sprite_group.add(self.character["saske/idle"])
             self.current_sprite = self.character["saske/idle"]
@@ -100,6 +115,7 @@ class SaskeStyle(Style):
     def only_change_to_idle(self):
         Style.change_to_status(self, 'saske/idle')
         self.status = 'idle'
+        print('执行了only_change_to_idle')
         #self.remove_original_just_show('saske/后仰')
         #self.status = '后仰'
     
@@ -107,6 +123,8 @@ class SaskeStyle(Style):
         if not self.status == '后仰':
             self.change_to_status_just_show('saske/后仰')
             self.status = '后仰'
+    #def change_to_hou_yang_for_fen_shen(self):
+        
     
     def change_to_status(self, cmd):
         if cmd == 'run':
@@ -143,7 +161,9 @@ class SaskeStyle(Style):
             Style.change_to_status(self, 'saske/开篇挥手')
             self.current_sprite.set_left_padding(self.start_left_padding)
             self.status = '开篇挥手'
-            
+        elif cmd == '完整跳':
+            Style.change_to_status(self, 'saske/完整跳')
+            self.status = '完整跳'
     def update(self):
         #可以在这里填充关于键盘的响应
         return
