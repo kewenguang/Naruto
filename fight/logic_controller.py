@@ -14,6 +14,7 @@ from fight.pain_style import PainStyle
 from fight.resource_load import Color
 from fight import saske_style
 from scipy import character
+from fight.resource_load import GameCommonData
 
 class Controller():
     def __init__(self, sprite_group, image, mixer):
@@ -37,7 +38,7 @@ class Controller():
         self.casting_si_sha_flag = False
         self.update_screen = self.update_backgroud
         
-        self.command_index = 0
+        self.command_index = 10
         
     def feng_mian_handle_key_event(self):
         if self.key_controller.key_a:
@@ -207,7 +208,6 @@ class Controller():
             self.list_naruto.append(naruto)
             naruto.set_top_padding(1000)
         self.lianxufenshen()
-        #单个分身的65-71是和做分身之术，所以重新捣鼓图片生成一下 以65为基准的分身之术
         #优化，注释掉那些不需要加载的图片，init方法应该可以自选加载哪些图片，可以加函数
             
     def chu_fa_fen_shen(self):
@@ -362,13 +362,14 @@ class Controller():
             self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 12
         elif image_index == 21:
             self.ka_ka_xi_shui_dun_te_xiao = KakaxiStyle(self.sprite_group, situation_flag = 4)
-            self.ka_ka_xi_shui_dun_te_xiao.set_left_padding(150)
+            self.ka_ka_xi_shui_dun_te_xiao.set_left_padding(self.saske_style.get_left_padding() - 600)
             self.ka_ka_xi_shui_dun_te_xiao.set_top_padding(self.ka_ka_xi.get_top_padding() + 10)
             self.ka_ka_xi_shui_dun_te_xiao.character['kakaxi/水龙弹打中特效'].append_end_update_function(self.end_update_shui_dun_te_xiao)
         elif image_index > 21 and image_index < 27:
             self.ka_ka_xi_shui_dun_te_xiao.character['kakaxi/水龙弹打中特效'].image_index = 0
-            
-        if left_padding == 300: #这个数值在最后联调的时候需要改动-----------------------------------------
+        elif image_index == 31:
+            self.wo_ai_luo.change_to_status('后仰')
+        if left_padding > 590 and left_padding < 620 : #这个数值在最后联调的时候需要改动-----------------------------------------
             self.ka_ka_xi_shui_long_dan_zhi_shu.character['kakaxi/水龙弹之术'].image_index = 20
     
     def remove_shui_long_dan_zhi_shu(self):
@@ -405,20 +406,28 @@ class Controller():
         self.ka_ka_xi.revert_top_padding()
         self.ka_ka_xi.change_to_status('idle')
     
+    def remove_wo_ai_luo(self):
+        self.wo_ai_luo.remove_current_sprite_from_sprite_group()
+        
     def shou_li_jian_fly(self, image_index):
         if image_index == 0:
             self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].image_index = 1
         #20 15
-        left_padding = self.ka_ka_xi_shou_li_jian.get_left_padding() - 12
-        top_padding = self.ka_ka_xi_shou_li_jian.get_top_padding() + 9
+        
+        left_padding = self.ka_ka_xi_shou_li_jian.get_left_padding() - (int)((self.shou_li_jian_origin_x - self.wo_ai_luo.get_left_padding())/20)
+        top_padding = self.ka_ka_xi_shou_li_jian.get_top_padding() - (int)((self.shou_li_jian_origin_y - self.wo_ai_luo.get_top_padding())/20)
         self.ka_ka_xi_shou_li_jian.set_left_padding(left_padding)
         self.ka_ka_xi_shou_li_jian.set_top_padding(top_padding)
-        if left_padding < 600:
-            self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].clear_update_function()
+        if left_padding < self.wo_ai_luo.get_left_padding():
+            self.play_sound_by_channel3('刀砍.wav')
+            self.wo_ai_luo.change_to_status('后仰')
             #这里本来要插入打中人的特效什么的，被打中的人要后仰-----------------------------------------------
             self.ka_ka_xi_shou_li_jian.remove_current_sprite_from_sprite_group()
             self.shou_li_jian_num = self.shou_li_jian_num - 1
             if self.shou_li_jian_num == 0:
+                self.wo_ai_luo.character['woailuo/后仰'].append_end_update_function(self.wo_ai_luo.change_to_xiao_shi())
+                self.wo_ai_luo.character['woailuo/消失'].append_end_update_function(self.remove_wo_ai_luo)
+                self.ka_ka_xi_shou_li_jian.character['kakaxi/手里剑'].clear_update_function()
                 #倒序的神威
                 self.ka_ka_xi_shen_wei_reverse = KakaxiStyle(self.sprite_group, situation_flag = 6)
                 self.ka_ka_xi_shen_wei_reverse.set_left_padding(self.ka_ka_xi.get_left_padding())
@@ -427,13 +436,17 @@ class Controller():
                 self.play_sound('神威.wav')
             else:
                 #这里的手里剑位置变更后面再调
-                self.generate_shou_li_jian(800 + self.shou_li_jian_num * 48, 250 + self.shou_li_jian_num * 36)
+                self.shou_li_jian_origin_x = 800 + self.shou_li_jian_num * 48
+                self.shou_li_jian_origin_y = 250 + self.shou_li_jian_num * 36
+                self.generate_shou_li_jian(self.shou_li_jian_origin_x, self.shou_li_jian_origin_y)
                  
     def end_update_shen_wei(self):
-        self.shou_li_jian_num = 4
+        self.shou_li_jian_num = 3
         self.ka_ka_xi_shen_wei.remove_current_sprite_from_sprite_group()
         self.ka_ka_xi.set_top_padding(1000)
-        self.generate_shou_li_jian(800, 250)
+        self.shou_li_jian_origin_x = 800 + self.shou_li_jian_num * 48
+        self.shou_li_jian_origin_y = 250 + self.shou_li_jian_num * 36
+        self.generate_shou_li_jian(self.shou_li_jian_origin_x, self.shou_li_jian_origin_y)
         
     def shen_wei(self):
         self.ka_ka_xi.change_to_status('捂眼')
@@ -447,14 +460,14 @@ class Controller():
     
     
     #自来也特效##############################################################################################
-    
+    #火焰过于细长，应该短一点，宽一点                   卡卡西也没有消失
     def zi_lai_ye_to_idle(self):
         self.zi_lai_ye.change_to_status('idle')
         
     def add_zi_lai_ye(self):
         #self.naruto_style.remove_current_sprite_from_sprite_group()
         self.zi_lai_ye = ZilaiyeStyle(self.sprite_group)
-        self.zi_lai_ye.set_left_padding(self.naruto_style.get_left_padding())
+        self.zi_lai_ye.set_left_padding(GameCommonData.left_character_padding)
         self.zi_lai_ye.change_to_status('出现')
         self.zi_lai_ye.character['zilaiye/出现'].append_end_update_function(self.zi_lai_ye_to_idle)
         self.play_sound('通灵出来的声音.wav')
@@ -593,7 +606,7 @@ class Controller():
     def update_screen_with_white(self):
         self.screen.fill(Color.WHITE)
     
-    #几个问题  水龙的位置太远了，在我爱罗哪里消失      四个分镖时间太长 ，且没打中     自来也出现在很远的地方   我爱罗没消失  卡卡西没消失  佩恩不停举手
+    
     
     def handle_key_event(self):
         #if self.key_controller.key_m:
@@ -619,6 +632,7 @@ class Controller():
             elif self.command_index == 9:
                 self.shen_wei()
             elif self.command_index == 10:
+                self.add_ka_ka_xi()
                 self.add_zi_lai_ye()
             elif self.command_index == 11:
                 self.change_to_tong_ling()

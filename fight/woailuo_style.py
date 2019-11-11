@@ -8,11 +8,17 @@ from fight.resource_load import Style
 
 class WoailuoStyle(Style):
     
+    def change_to_xiao_shi(self):
+        self.change_to_status('消失')
+    
+    def change_to_idle(self):
+        self.change_to_status('idle')
+    
     def __init__(self, sprite_group, situation_flag = 1):
         self.sprite_group = sprite_group
         self.character = {}
         if situation_flag == 1:
-            woailuo_image_url = ['woailuo/出现', 'woailuo/倒地', 'woailuo/蹲下', 
+            woailuo_image_url = ['woailuo/出现', 'woailuo/倒地', 'woailuo/蹲下', 'woailuo/消失', 
                                  'woailuo/后仰', 'woailuo/举手握拳', 'woailuo/idle']
             for i in range(len(woailuo_image_url)):
                 print('saske_image_url[i]:' + woailuo_image_url[i])
@@ -36,6 +42,7 @@ class WoailuoStyle(Style):
             self.character["woailuo/蹲下"].set_frame_rate(15)
             
             self.character["woailuo/后仰"].set_frame_rate(8)
+            self.character["woailuo/后仰"].append_end_update_function(self.change_to_idle)
             
             self.character["woailuo/举手握拳"].set_frame_rate(8)
             
@@ -80,3 +87,6 @@ class WoailuoStyle(Style):
         elif status == 'run':
             Style.change_to_status(self, 'woailuo/run')
             self.status = 'run'
+        elif status == '消失':
+            Style.change_to_status(self, 'woailuo/消失')
+            self.status = '消失'
