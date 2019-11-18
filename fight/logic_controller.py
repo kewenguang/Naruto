@@ -38,7 +38,7 @@ class Controller():
         self.casting_si_sha_flag = False
         self.update_screen = self.update_backgroud
         
-        self.command_index = 10
+        self.command_index = 0
         
     def feng_mian_handle_key_event(self):
         if self.key_controller.key_a:
@@ -214,6 +214,7 @@ class Controller():
         self.list_naruto = []
         self.add_fenshen_to_group()
         self.naruto_style.change_to_status('结印')
+        self.play_music('鸣人主题曲.mp3')
     #鸣人特效##############################################################################################
     
     
@@ -460,7 +461,6 @@ class Controller():
     
     
     #自来也特效##############################################################################################
-    #火焰过于细长，应该短一点，宽一点                   卡卡西也没有消失
     def zi_lai_ye_to_idle(self):
         self.zi_lai_ye.change_to_status('idle')
         
@@ -493,7 +493,8 @@ class Controller():
         self.play_sound('通灵出来的声音.wav')
         
     def huo_yan_update_function(self, image_index):
-        print('huo yan image_index:' + str(image_index))
+        if image_index == 9:
+            self.ka_ka_xi.remove_current_sprite_from_sprite_group()
         if image_index == 19:
             self.zi_lai_ye_huo_you.character['zilaiye/火油'].clear_update_function() 
         
@@ -503,8 +504,8 @@ class Controller():
     def update_huo_you_function(self, image_index):
         if image_index == 1:
             self.huo_yan = ZilaiyeStyle(self.sprite_group, situation_flag = 4)
-            self.huo_yan.set_left_padding(self.zi_lai_ye.get_left_padding() + 690)
-            self.huo_yan.set_top_padding(self.zi_lai_ye.get_top_padding() + 20)
+            self.huo_yan.set_left_padding(self.zi_lai_ye.get_left_padding() + 600)
+            self.huo_yan.set_top_padding(self.zi_lai_ye.get_top_padding() + 70)
             self.huo_yan.character['zilaiye/长条火焰'].append_update_function(self.huo_yan_update_function)
             self.huo_yan.character['zilaiye/长条火焰'].append_end_update_function(self.remove_huo_yan)
         if image_index == 4:
@@ -544,20 +545,31 @@ class Controller():
     
     def di_bao_tian_xing_bao_zha(self):
         self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星的爆炸')
-        self.pain_di_bao_tian_xing_qiu.set_top_padding(350)
+        self.pain_di_bao_tian_xing_qiu.set_top_padding(500)
         self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的爆炸'].append_end_update_function(self.remove_bao_zha) 
         self.play_sound('爆炸.wav')
     #def end_chu_xian_ge_qiu(self):
     #    self.pain_di_bao_tian_xing_qiu.change_to_status('地爆天星旋转')
     #    self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星旋转'].append_end_update_function(self.di_bao_tian_xing_bao_zha) 
     
+    def xi_zhu_zi_lai_ye_to_qiu(self, image_index):
+        self.zi_lai_ye.set_left_padding(self.zi_lai_ye.get_left_padding() + self.fly_interval_x * image_index)
+        self.zi_lai_ye.set_top_padding(self.zi_lai_ye.get_top_padding() - self.fly_interval_y * image_index)
+        if self.zi_lai_ye.get_left_padding() > self.pain_di_bao_tian_xing_qiu.get_left_padding():
+            self.zi_lai_ye.remove_current_sprite_from_sprite_group()
+            self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].clear_update_function()
+    
     def chu_xian_ge_qiu(self):
         self.pain_di_bao_tian_xing_lun_hui_yan.remove_current_sprite_from_sprite_group()
         self.pain_di_bao_tian_xing_qiu = PainStyle(self.sprite_group, situation_flag = 3)#.character['pain/地爆天星的球'].append_update_function(self.hama_to_idle)
-        self.pain_di_bao_tian_xing_qiu.set_left_padding(600)
-        self.pain_di_bao_tian_xing_qiu.set_top_padding(400)
+        self.pain_di_bao_tian_xing_qiu.set_left_padding(700)#130)
+        self.pain_di_bao_tian_xing_qiu.set_top_padding(557)
         self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].append_end_update_function(self.di_bao_tian_xing_bao_zha)
-        self.update_screen = self.update_screen_with_white
+        self.pain_di_bao_tian_xing_qiu.character['pain/地爆天星的球'].append_update_function(self.xi_zhu_zi_lai_ye_to_qiu)
+        self.update_screen = self.update_backgroud
+        self.zi_lai_ye.change_to_status('被吸住')
+        self.fly_interval_x = (int)((self.pain_di_bao_tian_xing_qiu.get_left_padding() + 80 - self.zi_lai_ye.get_left_padding())/22)
+        self.fly_interval_y = (int)((self.pain_di_bao_tian_xing_qiu.get_top_padding() + 80 - self.zi_lai_ye.get_top_padding())/22)
         self.play_sound('石头聚集.wav')
     
     def draw_screen_with_black(self):
@@ -632,7 +644,6 @@ class Controller():
             elif self.command_index == 9:
                 self.shen_wei()
             elif self.command_index == 10:
-                self.add_ka_ka_xi()
                 self.add_zi_lai_ye()
             elif self.command_index == 11:
                 self.change_to_tong_ling()
@@ -641,7 +652,7 @@ class Controller():
             elif self.command_index == 13:
                 self.add_pain()
             elif self.command_index == 14:
-                self.xi_zhu_zi_lai_ye()
+                self.release_di_bao_tian_xing()
             print('self.command_index:' + str(self.command_index))
             self.command_index = self.command_index + 1
         '''

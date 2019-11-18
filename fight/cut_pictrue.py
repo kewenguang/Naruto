@@ -385,13 +385,27 @@ def cut_off_white_left_padding():
         index_padding = index_padding + 1
         img_temp.save(output_dir + "/" + filename)
 
-input_dir = prefix_dir + '佩恩/出场'
-output_dir = prefix_dir + '佩恩/整理后的出场'
+input_dir = prefix_dir + '自来也/长条火焰'
+output_dir = prefix_dir + '自来也/拉长的火焰'
 def resize_pic():
     for filename in os.listdir(input_dir):
         img = Image.open(input_dir + "/" + filename)
-        out = img.resize((int(1200), int(600)), Image.ANTIALIAS)
+        out = img.resize((int(1000), int(150)), Image.ANTIALIAS)
         out.save(output_dir + "/" + filename)
+
+#resize_pic()
+#sys.exit()
+
+input_dir = prefix_dir + '自来也/长条火焰'
+output_dir = prefix_dir + '自来也/拉长的火焰'
+def set_left_top_padding_pixel_to_white():
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        img.putpixel((0, 0), (255, 255, 255, 255))
+        img.save(output_dir + "/" + filename)
+
+set_left_top_padding_pixel_to_white()
+sys.exit()
 
 def cut_top_pic():
     img_white = Image.open(input_dir + "/39.png")

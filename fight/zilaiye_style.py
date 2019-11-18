@@ -11,7 +11,8 @@ class ZilaiyeStyle(Style):
         self.sprite_group = sprite_group
         self.character = {}
         if situation_flag == 1:
-            zilaiye_image_url = ['zilaiye/idle', 'zilaiye/出现', 'zilaiye/捂嘴喷火', 'zilaiye/下蹲通灵']
+            zilaiye_image_url = ['zilaiye/idle', 'zilaiye/出现', 'zilaiye/捂嘴喷火',
+                                  'zilaiye/下蹲通灵', 'zilaiye/被吸走']
             for i in range(len(zilaiye_image_url)):
                 print('zilaiye_image_url[i]:' + zilaiye_image_url[i])
                 self.add_sprite(zilaiye_image_url[i])
@@ -32,6 +33,7 @@ class ZilaiyeStyle(Style):
             self.character["zilaiye/出现"].set_frame_rate(8)
             self.character["zilaiye/捂嘴喷火"].set_frame_rate(1)
             self.character["zilaiye/下蹲通灵"].set_frame_rate(8)
+            self.character["zilaiye/被吸走"].set_frame_rate(1)
             self.current_sprite = self.character["zilaiye/idle"]
             self.sprite_group.add(self.character["zilaiye/idle"])
             self.status = 'idle'
@@ -74,4 +76,7 @@ class ZilaiyeStyle(Style):
         elif status == '蛤蟆喷火':
             Style.change_to_status(self, 'zilaiye/蛤蟆喷火')
             self.status = '蛤蟆喷火'
+        elif status == '被吸走':
+            Style.change_to_status(self, 'zilaiye/被吸走')
+            self.status = '被吸走'
             
