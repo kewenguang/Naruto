@@ -12,8 +12,6 @@ from fight.kakaxi_style import KakaxiStyle
 from fight.zilaiye_style import ZilaiyeStyle
 from fight.pain_style import PainStyle
 from fight.resource_load import Color
-from fight import saske_style
-from scipy import character
 from fight.resource_load import GameCommonData
 
 class Controller():
