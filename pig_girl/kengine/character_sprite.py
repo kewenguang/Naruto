@@ -8,15 +8,15 @@ import time
 import os
 import functools
 
-img_dir = os.path.join(os.path.dirname(__file__), '../assets')
+#img_dir = os.path.join(os.path.dirname(__file__), '../assets')
 
-def image_load(self, image_dir_str):
+def image_load(image_dir_str):
         images = []
-        complete_img_dir = os.path.join(img_dir, image_dir_str)
-        file_list = os.listdir(complete_img_dir) #列出文件夹下所有的目录与文件
+        #complete_img_dir = os.path.join(img_dir, image_dir_str)
+        file_list = os.listdir(image_dir_str) #列出文件夹下所有的目录与文件
         file_list.sort(key=functools.cmp_to_key(compare_str))
         for i in range(0,len(file_list)):
-            file_path = os.path.join(complete_img_dir, file_list[i])
+            file_path = os.path.join(image_dir_str, file_list[i])
             images.append(pygame.image.load(file_path).convert())
         return images
     
@@ -29,9 +29,9 @@ class CharacterSprite(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
             
-        self.stop_flush = True
+        self.stop_flush = False
         self.image_index = 0
-        self.flush_interval = 17
+        self.flush_interval = 30
         self.flush_time = int(round(time.time() * 1000))
         
         self.start_update_function = []
@@ -39,19 +39,19 @@ class CharacterSprite(pygame.sprite.Sprite):
         self.end_update_function = []
     
     def set_images(self, images_url, need_flip = False):
-        self.images = self.image_load(images_url)
+        self.images = image_load(images_url)
         
         self.need_flip = need_flip
         if need_flip :#如果玩家站在右边，他的图片要翻转
             for i in range(len(self.images)):
                 self.images[i] = pygame.transform.flip(self.images[i],True,False)
         
-        image = self.images[0]
-        self.image_width, self.image_height = image.get_size()
+        self.image = self.images[0]
+        self.image_width, self.image_height = self.image.get_size()
         for i in range(len(self.images)):
             transColor = self.images[i].get_at((0,0)) 
             self.images[i].set_colorkey(transColor)
-        self.rect = image.get_rect()
+        self.rect = self.image.get_rect()
  
     #如果这个列表中要移除元素，需要改存储方式，把存储方式改为map，然后自己造一个id生成器，id->func，移除根据id来
     def append_start_update_function(self, func):
@@ -127,6 +127,7 @@ class CharacterSprite(pygame.sprite.Sprite):
             return
         if not self.fixed_flush():
             return
+        
         if self.image_index == 0 :
             for func in self.start_update_function:
                 func()

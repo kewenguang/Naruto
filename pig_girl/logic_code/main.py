@@ -6,15 +6,23 @@ Created on 2019年12月10日
 import sys
 sys.path.append('../')
 
-from kengine.scene_manager import SceneManager
 import pygame
+
+from kengine.scene_manager import SceneManager
+
+from feng_mian_scene import FengmianScene
+from begin_girl_scene import BeginGirlScene
 
 running = True
 
 ####################################
 scene_manager = SceneManager()
-
+begin_girl_scene = BeginGirlScene()
+scene_manager.add_scene(begin_girl_scene)
+feng_mian_scene = FengmianScene()
+scene_manager.add_scene(feng_mian_scene)
 ####################################
+scene_manager.change_to_scene_by_name_with_no_remove('少女变身')
 
 pygame.display.set_caption("pig girl")
 

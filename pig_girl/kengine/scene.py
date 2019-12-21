@@ -8,11 +8,17 @@ Created on 2019年11月28日
 #
 import pygame
 
+from core.color import WHITE
+
 class Scene():
     
     def __init__(self):
         self.loop = self.start
         self.sprites = pygame.sprite.Group()
+    
+    def update_background(self):
+        #这里的screen属性在添加到screen_manager的时候会被设置
+        self.screen.fill(WHITE)  
         
     def start(self):
         raise NotImplementedError('子类中必须实现start方法')
