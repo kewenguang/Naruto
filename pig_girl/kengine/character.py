@@ -4,13 +4,15 @@ Created on 2019年11月26日
 @author: kewenguang
 '''
 #此类对CharacterSprite进行封装，包含多个CharacterSprite，每一个CharacterSprite代表一个状态，一个动作
-from .character_sprite import CharacterSprite
+from character_sprite import CharacterSprite
 
 class Character():
 
     def __init__(self):
         self.speed = 10
         self.character_sprites = {}
+        self.signal_to_scene = ''
+        self.name = ''
         
     def change_to_status(self, status_name):
         self.sprite_group.remove_internal(self.current_sprite)
@@ -73,4 +75,5 @@ class Character():
     def add_character_sprite(self, image_url, need_flip = False):
         return self.add_character_sprite_with_name(image_url, image_url, need_flip)
     
-    
+    def clear_signal_to_scene(self):
+        self.signal_to_scene = ''

@@ -13,11 +13,12 @@ class BianShen(Character):
     
     def change_to_next_scene(self):
         print('切换到封面场景')
-        self.signal_to_upper = 'next scene'
+        self.signal_to_scene = 'next scene'
     
     def __init__(self, sprite_group):
         print('BianShen init ...')
         Character.__init__(self)
+        self.name = 'bian_shen'
         self.set_sprite_group(sprite_group)
         
         self.add_character_sprite_with_name('mo_fa_bang', './assert/pic/mo_fa_bang')
@@ -32,6 +33,5 @@ class BianShen(Character):
         self.character_sprites['mo_fa_bang'].set_frame_rate(8)
         self.character_sprites['begin_girl'].set_frame_rate(14)
         
-        self.signal_to_upper = ''
         self.set_padding(0,0)
         

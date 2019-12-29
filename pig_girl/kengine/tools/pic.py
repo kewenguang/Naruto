@@ -27,3 +27,10 @@ def resize_one_pic(width, height, input_file_path, output_file_path):
     out = img.resize((width, height), Image.ANTIALIAS)
     out.save(output_file_path)
     
+def resize_pic_in_dir_by_multiple(ratio, input_dir, output_dir):
+    for filename in os.listdir(input_dir):
+        img = Image.open(input_dir + "/" + filename)
+        width = img.size[0] * ratio
+        height = img.size[1] * ratio
+        out = img.resize((int(width), int(height)), Image.ANTIALIAS)
+        out.save(output_dir + '/' + filename)

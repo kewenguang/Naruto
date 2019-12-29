@@ -17,12 +17,14 @@ running = True
 
 ####################################
 scene_manager = SceneManager()
-begin_girl_scene = BeginGirlScene()
-scene_manager.add_scene(begin_girl_scene)
+#begin_girl_scene = BeginGirlScene()
+#scene_manager.add_scene(begin_girl_scene)
 feng_mian_scene = FengmianScene()
 scene_manager.add_scene(feng_mian_scene)
 ####################################
-scene_manager.change_to_scene_by_name_with_no_remove('少女变身')
+#scene_manager.change_to_scene_by_name_with_no_remove('少女变身')
+#为了调试界面，直接使用把界面改到封面
+scene_manager.change_to_scene_by_name_with_no_remove('封面')
 
 pygame.display.set_caption("pig girl")
 
