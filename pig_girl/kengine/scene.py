@@ -22,6 +22,8 @@ class Scene():
         self.sprite_group = pygame.sprite.Group()
         self.character_manager = CharacterManager()
         self.text_list = []
+        pygame.mixer.init()
+        self.mixer = pygame.mixer
     
     def update_background(self):
         #这里的screen属性在添加到screen_manager的时候会被设置
@@ -46,15 +48,29 @@ class Scene():
         for item in self.text_list:
             self.screen.blit(item[0], item[1])
         
+    def get_text_render(self, font, size, text, color):
+        font_info = pygame.font.SysFont(font, size)
+        return font_info.render(text, 1, color)
+        
     def add_text(self, 
                   font='华文宋体',
                   size = 50, 
                   text = 'text', 
                   color = (0, 0, 0),
                   location = (0, 0) ):
-        font_info = pygame.font.SysFont(font, size)
-        text_info = font_info.render(text, 1, color)
+        text_info = self.get_text_render(self, font, size, text, color)
         self.text_list.append((text_info, location))
+        
+    def add_text_at_center(self,
+                            font = '华文宋体',
+                            size = 50,
+                            text = 'text',
+                            color = (0, 0, 0),
+                            center = (0, 0)):
+        text_info = self.get_text_render(font, size, text, color)
+        self.text_list.append((text_info, (center[0] - text_info.get_width()/2, center[1] - text_info.get_height()/2)))
+        
+    
         #常见字体如下:
         #['arial', 'arialblack', 'bahnschrift', 'calibri', 
         #'cambriacambriamath', 'cambria', 'candara', 'comicsansms', 

@@ -17,16 +17,15 @@ class FengmianScene(Scene):
     #上背景图片，一个女孩的头像自底向上出现，然后是放“我有一支仙女棒，变大变小变漂亮”
     
     #喊声音的同时，也会有一只小猪从一边跑到另一边，然后发出鼻子的叫声”吭 吭“
-    #查一下获取画的字体长度的办法，这样才好计算位置
     #接下来要做的是创建一个窗体，然后可以拖动图集进入窗体，可以对图片进行放大缩小
     #选中图片的话，右下角会显示图片两个端点针对当前窗体左上角的坐标
     #还要可以拖文字，并显示文字坐标
     #
     
-    #接下来想一想怎么基于框架的层面添加背景，刷背景
     
     def __init__(self):
         super().__init__()
+        self.play_nick()
         self.name = "封面"
         self.background = pygame.image.load(r"./assert/pic/城堡背景.jpg")
         
@@ -34,11 +33,15 @@ class FengmianScene(Scene):
         self.character_manager.add_character(self.wendy_head_character)
         
         self.loop = self.start
+        
     
     def update_background(self):
         self.screen.blit(self.background, (0,0))
         
-        
+    #播放妖尾的波波的小白音乐
+    def play_nick(self):
+        self.mixer.music.load('./assert/voice/bgm/尼克.wav')
+        self.mixer.music.play(1, 0)
     
     def logic_clear_character_in_manager(self):
         if self.pig_character.signal_to_scene == 'pig disappear':
@@ -49,11 +52,10 @@ class FengmianScene(Scene):
             self.character_manager.remove_character(self.wendy_character)
             
             #窗体中间出现“猪猪女孩”的字样
-            
-            self.add_text(font = '华文琥珀',
+            self.add_text_at_center(font = '华文琥珀',
                            text = '猪猪女孩', 
                            color = (255,192,203), 
-                           location = (Windows.WIDTH/2 - 120, 200),
+                           center = (Windows.WIDTH/2 , 230),
                            size = 70)
             
     def logic_wait_for_pig(self):
@@ -61,6 +63,7 @@ class FengmianScene(Scene):
             self.pig_character = Pig(self.sprite_group)
             self.character_manager.add_character(self.pig_character)
             self.logic_update = self.logic_wait_for_wendy_run
+            print('小猪出现。。。')
     
     def logic_wait_for_wendy_run(self):
         if self.pig_character.signal_to_scene == 'wendy run appear':
